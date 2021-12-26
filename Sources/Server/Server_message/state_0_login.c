@@ -147,7 +147,7 @@ int state_0_login(char *buf)
     bzero(userid, 20);
     bzero(password, 20);
     users = NULL;
-	readUserFromFile(&users, "accounts.txt");
+	readUserFromFile(&users, "Server_message/accounts.txt");
 
 
     char *token = strtok(buf, "|");

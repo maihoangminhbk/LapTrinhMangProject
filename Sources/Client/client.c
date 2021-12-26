@@ -5,7 +5,7 @@
 #include <sys/types.h>
 #include <string.h>
 
-#include <Client_message/client_message.h>
+#include <client_message.h>
 
 #define SERVER_ADDR "127.0.0.1"
 #define SERVER_PORT 5550
@@ -13,9 +13,9 @@
 
 int main(){
 	int client_sock;
-	char buff[BUFF_SIZE + 1];
+	// char buff[BUFF_SIZE + 1];
 	struct sockaddr_in server_addr; /* server's address information */
-	int msg_len, bytes_sent, bytes_received;
+	// int msg_len, bytes_sent, bytes_received;
 	
 	//Step 1: Construct socket
 	client_sock = socket(AF_INET,SOCK_STREAM,0);
@@ -40,9 +40,17 @@ int main(){
 	
 	if(!login_message(client_sock)) {
 		printf("Login fails\n");
-		exit(0);
+		return 0;
 	}
+
+	if(!option_message(client_sock)) {
+		printf("Create room fails \n");
+		return 0;
+	}
+
 	
-	printf("login successful\n");
+	
+	
+
 	
 }

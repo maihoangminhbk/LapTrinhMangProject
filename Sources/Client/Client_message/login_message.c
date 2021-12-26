@@ -19,7 +19,7 @@ int login_message(int client_sock)
     char buff[256];
     memset(response, 0, 256);
     // receive data from the server
-    int bytes = 0;
+    // int bytes = 0;
     int count = 0;
     while (count < 5)
     {
@@ -72,6 +72,39 @@ int login_message(int client_sock)
         }
         else
         {
+            printf("login successful\n");
+            // return 1;
+        }
+
+
+        bytes_received = recv(client_sock, buff, BUFF_SIZE, 0);
+        if (bytes_received < 0)
+            perror("\nError: ");
+        else if (bytes_received == 0)
+            printf("Connection closed.\n");
+
+        buff[bytes_received] = '\0';
+        if (buff[0] == '0')
+        {
+            switch (buff[2])
+            {
+            case '0':
+                printf("Invalid username\n");
+                break;
+            case '1':
+                printf("Invalid password\n");
+                break;
+            case '2':
+                printf("Other login\n");
+                break;
+
+            default:
+                break;
+            }
+        }
+        else
+        {
+            printf("login successful\n");
             return 1;
         }
     }
