@@ -10,7 +10,7 @@
 
 #include <client_message.h>
 
-int wait_play_message(int client_sock) {
-    printf("Please wait for other play\n");
+int createship_message(int client_sock) {
+    printf("Please input ship position\n");
     
 }

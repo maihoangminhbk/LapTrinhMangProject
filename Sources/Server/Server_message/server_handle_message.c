@@ -23,7 +23,7 @@ int handle_message(char* buf, char* data) {
     }
 
     if(strcmp(func, "EXIT") == 0) {
-        return 3 ;
+        return 3;
     }
 
     return 0;

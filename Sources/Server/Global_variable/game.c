@@ -7,7 +7,7 @@
 game_node CreateNodeGame(int fd)
 {
     game_node temp;                                      // declare a node
-    temp = (game_node)malloc(sizeof(struct LinkedList)); // Cấp phát vùng nhớ dùng malloc()
+    temp = (game_node)malloc(sizeof(struct GameList)); // Cấp phát vùng nhớ dùng malloc()
     temp->next = NULL;                                   // Cho next trỏ tới NULL
     temp->player1 = fd;                             // Gán giá trị cho Node
     temp->player2 = 0;
@@ -131,6 +131,25 @@ int SearchGameWithPlayer(game_node head, int fd)
     return -1;
 }
 
+int SearchPlayerWithRoomName(game_node head, char* roomname)
+{
+    int position = 0;
+    // printf("Check join room search\n");
+    for (game_node p = head; p != NULL; p = p->next)
+    {
+        printf("room name -%s- - -%s-\n", p->room_name, roomname);
+        if (strcmp(p->room_name, roomname) == 0)
+        {
+            printf("Player 1 la %d\n", p->player1);
+            return p->player1;
+        } else {
+            printf("Khong bang nhau\n");
+        }
+        
+    }
+    return -1;
+}
+
 game_node DelByValGame(game_node head, int fd)
 {
     int position = SearchGameWithPlayer(head, fd);
@@ -149,6 +168,14 @@ game_data GetByValGame(game_node head, int fd)
     game_data data = GetGame(head, position);
     return data;
 }
+
+// game_data GetByRoomName(game_node head, char* roomname)
+// {
+//     int position = SearchGameWithRoomName(head, roomname);
+
+//     game_data data = GetGame(head, position);
+//     return data;
+// }
 
 game_node InitHeadGame()
 {

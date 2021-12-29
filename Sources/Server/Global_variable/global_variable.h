@@ -32,5 +32,8 @@ typedef struct GameList *game_node;
 game_data GetByValGame(game_node, int);
 game_node DelByValGame(game_node, int);
 game_node AddTailGame(game_node, int);
+// game_data GetByRoomName(game_node, char*);
+int SearchPlayerWithRoomName(game_node, char*);
+game_data GetGame(game_node, int);
 void TraverserGame(game_node);
 

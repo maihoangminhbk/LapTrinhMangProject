@@ -43,10 +43,14 @@ int main(){
 		return 0;
 	}
 
-	if(!option_message(client_sock)) {
-		printf("Create room fails \n");
-		return 0;
+	while(!option_message(client_sock)) {
+		// printf("Create room fails \n");
+		// return 0;
 	}
+
+	createship_message(client_sock);
+
+	
 
 	
 	

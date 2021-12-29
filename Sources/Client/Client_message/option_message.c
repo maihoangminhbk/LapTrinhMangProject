@@ -39,6 +39,7 @@ int option_message(int client_sock)
             printf("Input room name:\n");
             memset(roomname, 0, 20);
             fgets(roomname, 20, stdin);
+            roomname[strlen(roomname) - 1] = '\0';
             strcat(buff, "JOINROOM ");
             strcat(buff, roomname);
             break;
@@ -75,6 +76,7 @@ int option_message(int client_sock)
     {
     case '5':
         printf("Create room successful\n");
+        printf("Wait for other player\n");
         bytes_received = recv(client_sock, buff, BUFF_SIZE, 0);
         if (bytes_received < 0)
             perror("\nError: ");
@@ -82,12 +84,24 @@ int option_message(int client_sock)
             printf("Connection closed.\n");
 
         buff[bytes_received] = '\0';
-        if(strcmp(buff, "3")) {
+        if (strcmp(buff, "30") == 0)
+        {
+            printf("Find game successful... Let's goooooo\n");
             return 1;
         }
+        break;
+
+    case '6':
+        printf("Join room successful\n");
+        return 1;
+        break;
+    case '1':
+        printf("Not found room name, Join room fails\n");
+        return 0;
         break;
 
     default:
         break;
     }
+    return 0;
 }

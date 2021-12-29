@@ -209,24 +209,42 @@ int main(int argc, char **argv)
                                         memset(data, 0, 100);
                                         printf("Check\n");
                                         int message_func = handle_message(buf, data);
+                                        printf("data -%s-\n", data);
                                         printf("Check 2\n");
                                         printf("Buff la %s, func no la %d\n", buf, message_func);
+                                        if(message_func != 2) {
+                                                printf("T bang 2 roi day -%d-\n", message_func);
+                                        }
+                                        int recv_sock;
                                         switch (message_func)
                                         {
                                         case 0:
                                                 if (state_0_login(data))
                                                 {
                                                         head = AddTail(head, sockfd, 0);
+                                                        // head = AddTail(head, sockfd, 0);
                                                         Traverser(head);
                                                 };
 
 
                                                 break;
                                         case 1:
+                                                game_head = AddTailGame(game_head, sockfd);
+                                                // game_head = AddTailGame(game_head, sockfd);
                                                 state_1_createroom(data, sockfd, &game_head);
+                                                TraverserGame(game_head);
                                                 TraverserGame(game_head);
                                                 break;
                                         case 2:
+                                                printf("Check join 2\n");
+                                                // int index = SearchPlayerWithRoomName(game_head, data);
+                                                
+                                                int index = 0;
+                                                printf("index la %d\n", index);
+                                                if(state_1_joinroom(data, game_head, &recv_sock)) {
+                                                        write(recv_sock, "30", 2);
+                                                }
+                                                
                                                 break;
 
                                         default:
@@ -234,10 +252,7 @@ int main(int argc, char **argv)
                                         }
 
                                         n = strlen(data);
-                                        while (1)
-                                        {
-                                                // printf("Vo han\n");
-                                        }
+                                        printf("data la %s\n", data);
                                         
                                         write(sockfd, data, n);
 

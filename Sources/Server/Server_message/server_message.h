@@ -5,3 +5,5 @@ int handle_message(char*, char*);
 int state_0_login(char*);
 
 int state_1_createroom(char*, int, game_node*);
+
+int state_1_joinroom(char*, game_node, int*);
