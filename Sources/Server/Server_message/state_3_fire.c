@@ -33,7 +33,7 @@ int state_3_fire(char *buf, int fd, game_node game, int* recv_sock)
     {
         strcpy(game_node_get->data.fire_2, buf);
         *recv_sock = game_node_get->player1;
-        strcpy(buf, game_node_get->data.fire_1);
+        strcpy(buf, game_node_get->data.fire_2);
 
 
     }
