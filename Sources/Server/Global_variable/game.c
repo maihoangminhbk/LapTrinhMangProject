@@ -4,6 +4,20 @@
 
 #include <global_variable.h>
 
+void setz(game_data *map)
+{
+	int i = 0, j = 0;
+	for (i = 0; i < ROW; i++)
+	{
+		for (j = 0; j < COL; j++)
+		{
+			(*map).home[i][j] = 0;
+            (*map).away[i][j] = 0;
+		}
+	}
+	//memset(&map.message, 0, MAXLINE);
+}
+
 game_node CreateNodeGame(int fd)
 {
     game_node temp;                                      // declare a node
@@ -16,8 +30,12 @@ game_node CreateNodeGame(int fd)
     memset(roomname, 0, 20);
     char id[6];
     memset(id, 0, 6);
-    memset(temp->data.ship_position_1, 0, 10);
-    memset(temp->data.ship_position_2, 0, 10);
+    //memset(temp->data.ship_position_1, 0, 10);
+    //memset(temp->data.ship_position_2, 0, 10);
+    setz(&temp->data1);
+    setz(&temp->data2);
+    temp->data1.count_ship = 0;
+    temp->data2.count_ship = 0;
     // itoa(fd, id, 10);
     sprintf(id, "%d", fd);
     strcat(roomname, "room");
@@ -136,7 +154,7 @@ int SearchGameWithPlayer(game_node head, int fd)
 
 int SearchPlayerWithRoomName(game_node head, int fd, char* roomname)
 {
-    int position = 0;
+    //int position = 0;
     // printf("Check join room search\n");
     for (game_node p = head; p != NULL; p = p->next)
     {
@@ -169,7 +187,7 @@ game_data GetByValGame(game_node head, int fd)
 {
     int position = SearchGameWithPlayer(head, fd);
 
-    game_data data = GetGame(head, position)->data;
+    game_data data = GetGame(head, position)->data1;
     return data;
 }
 

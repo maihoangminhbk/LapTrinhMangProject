@@ -77,7 +77,7 @@ int main()
 			break;
 
 		case 3:
-			fire_message(client_sock, turn);
+			//fire_message(client_sock, turn);
 			break;
 
 		default:

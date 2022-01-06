@@ -1,4 +1,5 @@
-
+#define ROW 10
+#define COL 10
 
 struct LinkedList{
     int connfd;
@@ -16,10 +17,13 @@ node AddTail(node head, int fd, int state);
 void Traverser(node);
 
 typedef struct game_data {
-    char ship_position_1[10];
-    char ship_position_2[10];
-    char fire_1[10];
-    char fire_2[10];
+    //char ship_position_1[10];
+    //char ship_position_2[10];
+    //char fire_1[10];
+    //char fire_2[10];
+    int home[ROW][COL];
+    int away[ROW][COL];
+    int count_ship;
 } game_data;
 
 struct GameList
@@ -28,11 +32,15 @@ struct GameList
     int player2;
     char room_name[20];
     int turn;
-    game_data data;
+    game_data data1;
+    game_data data2;
     struct GameList* next;
 };
 
 typedef struct GameList *game_node;
+
+void setz(game_data*);
+
 game_data GetByValGame(game_node, int);
 game_node DelByValGame(game_node, int);
 game_node AddTailGame(game_node, int);

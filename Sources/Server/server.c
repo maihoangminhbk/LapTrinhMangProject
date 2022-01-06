@@ -207,6 +207,8 @@ int main(int argc, char **argv)
                                         
                                         char data[100];
                                         memset(data, 0, 100);
+                                        char data_opp[20];
+                                        memset(data_opp, 0, 20);
                                         printf("Check\n");
                                         int message_func = handle_message(buf, data);
                                         printf("data -%s-\n", data);
@@ -238,8 +240,8 @@ int main(int argc, char **argv)
                                         case 2:
                                                 // int index = SearchPlayerWithRoomName(game_head, data);
                                                 
-                                                int index = 0;
-                                                printf("index la %d\n", index);
+                                                //int index1 = 0;
+                                                //printf("index la %d\n", index1);
                                                 if(state_1_joinroom(data, sockfd, game_head, &recv_sock)) {
                                                         write(recv_sock, "30", 2);
                                                 }
@@ -249,13 +251,13 @@ int main(int argc, char **argv)
                                                 if(state_2_createship(data, sockfd, game_head, &recv_sock) == 0) {
                                                         write(recv_sock, "41", 2);
                                                 };
-
+                                                //state_2_createship(data, sockfd, game_head, &recv_sock);
                                                 break;
                                         
                                         case 5:
-                                                state_3_fire(data, sockfd, game_head, &recv_sock);
-                                                write(recv_sock, data, strlen(data));
-                                                data[0] = '0';
+                                                state_3_fire(data, data_opp, sockfd, game_head, &recv_sock);
+                                                write(recv_sock, data_opp, strlen(data_opp));
+                                                //data[0] = '0';
                                                 break;
 
                                         default:
