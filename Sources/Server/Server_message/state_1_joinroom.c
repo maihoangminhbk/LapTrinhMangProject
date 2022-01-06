@@ -16,9 +16,9 @@
 // #include <global_variable.h>
 
 
-int state_1_joinroom(char *buf, game_node game, int* recv_sock) {
+int state_1_joinroom(char *buf, int fd, game_node game, int* recv_sock) {
     
-    int index = SearchPlayerWithRoomName(game, buf);
+    int index = SearchPlayerWithRoomName(game, fd, buf);
     // TraverserGame(game);
     
     

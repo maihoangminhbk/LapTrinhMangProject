@@ -26,5 +26,13 @@ int handle_message(char* buf, char* data) {
         return 3;
     }
 
+    if(strcmp(func, "CREATESHIP") == 0) {
+        return 4;
+    }
+
+    if(strcmp(func, "TURN") == 0) {
+        return 5;
+    }
+
     return 0;
 }

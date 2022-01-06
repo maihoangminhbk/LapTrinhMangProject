@@ -11,10 +11,13 @@ game_node CreateNodeGame(int fd)
     temp->next = NULL;                                   // Cho next trỏ tới NULL
     temp->player1 = fd;                             // Gán giá trị cho Node
     temp->player2 = 0;
+    temp->turn = 0;
     char roomname[20];
     memset(roomname, 0, 20);
     char id[6];
     memset(id, 0, 6);
+    memset(temp->data.ship_position_1, 0, 10);
+    memset(temp->data.ship_position_2, 0, 10);
     // itoa(fd, id, 10);
     sprintf(id, "%d", fd);
     strcat(roomname, "room");
@@ -105,7 +108,7 @@ game_node DelAtGame(game_node head, int position)
     return head;
 }
 
-game_data GetGame(game_node head, int index)
+game_node GetGame(game_node head, int index)
 {
     int k = 0;
     game_node p = head;
@@ -114,7 +117,7 @@ game_data GetGame(game_node head, int index)
         ++k;
         p = p->next;
     }
-    return p->data;
+    return p;
 }
 
 int SearchGameWithPlayer(game_node head, int fd)
@@ -131,7 +134,7 @@ int SearchGameWithPlayer(game_node head, int fd)
     return -1;
 }
 
-int SearchPlayerWithRoomName(game_node head, char* roomname)
+int SearchPlayerWithRoomName(game_node head, int fd, char* roomname)
 {
     int position = 0;
     // printf("Check join room search\n");
@@ -141,6 +144,7 @@ int SearchPlayerWithRoomName(game_node head, char* roomname)
         if (strcmp(p->room_name, roomname) == 0)
         {
             printf("Player 1 la %d\n", p->player1);
+            p->player2 = fd;
             return p->player1;
         } else {
             printf("Khong bang nhau\n");
@@ -165,7 +169,7 @@ game_data GetByValGame(game_node head, int fd)
 {
     int position = SearchGameWithPlayer(head, fd);
 
-    game_data data = GetGame(head, position);
+    game_data data = GetGame(head, position)->data;
     return data;
 }
 
