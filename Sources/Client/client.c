@@ -40,7 +40,7 @@ int main()
 	printf("========================\n");
 	int op = 0;
 	int turn = 0;
-	while (1 == 1)
+	while (op != 4)
 	{
 		switch (op)
 		{
@@ -77,9 +77,9 @@ int main()
 			break;
 
 		case 3:
-			//fire_message(client_sock, turn);
+			fire_message(client_sock, turn);
+			op = 4;
 			break;
-
 		default:
 			break;
 		}

@@ -207,8 +207,8 @@ int main(int argc, char **argv)
                                         
                                         char data[100];
                                         memset(data, 0, 100);
-                                        char data_opp[20];
-                                        memset(data_opp, 0, 20);
+                                        char data_opp[100];
+                                        memset(data_opp, 0, 100);
                                         printf("Check\n");
                                         int message_func = handle_message(buf, data);
                                         printf("data -%s-\n", data);
@@ -218,6 +218,7 @@ int main(int argc, char **argv)
                                         //         printf("T bang 2 roi day -%d-\n", message_func);
                                         // }
                                         int recv_sock;
+                                        int result;
                                         switch (message_func)
                                         {
                                         case 0:
@@ -227,7 +228,10 @@ int main(int argc, char **argv)
                                                         // head = AddTail(head, sockfd, 0);
                                                         Traverser(head);
                                                 };
-
+                                                n = strlen(data);
+                                                printf("data la %s\n", data);
+                                                printf("sockfd = %d\n", sockfd);
+                                                write(sockfd, data, n);
 
                                                 break;
                                         case 1:
@@ -236,6 +240,11 @@ int main(int argc, char **argv)
                                                 state_1_createroom(data, sockfd, &game_head);
                                                 // TraverserGame(game_head);
                                                 TraverserGame(game_head);
+
+                                                n = strlen(data);
+                                                printf("data la %s\n", data);
+                                                printf("sockfd = %d\n", sockfd);
+                                                write(sockfd, data, n);
                                                 break;
                                         case 2:
                                                 // int index = SearchPlayerWithRoomName(game_head, data);
@@ -246,28 +255,49 @@ int main(int argc, char **argv)
                                                         write(recv_sock, "30", 2);
                                                 }
                                                 
+                                                n = strlen(data);
+                                                printf("data la %s\n", data);
+                                                printf("sockfd = %d\n", sockfd);
+                                                write(sockfd, data, n);
                                                 break;
                                         case 4:
-                                                if(state_2_createship(data, sockfd, game_head, &recv_sock) == 0) {
+                                                result = state_2_createship(data, sockfd, game_head, &recv_sock);
+                                                printf("result = %d\n", result);
+                                                if( result == 0) {
                                                         write(recv_sock, "41", 2);
+                                                        printf("2\n");
                                                 };
-                                                //state_2_createship(data, sockfd, game_head, &recv_sock);
+                                                n = strlen(data);
+                                                if (result == 1) {
+                                                        write(sockfd, data, n);
+                                                }
+                                                // state_2_createship(data, sockfd, game_head, &recv_sock);
+                                                // write(recv_sock, "41", 2);
+                                                //n = strlen(data);
+                                                printf("data la %s\n", data);
+                                                printf("sockfd = %d\n", sockfd);
+                                                write(sockfd, data, n);
                                                 break;
                                         
                                         case 5:
                                                 state_3_fire(data, data_opp, sockfd, game_head, &recv_sock);
                                                 write(recv_sock, data_opp, strlen(data_opp));
                                                 //data[0] = '0';
+                                                n = strlen(data);
+                                                printf("data la %s b\n", data);
+                                                printf("sockfd = %d\n", sockfd);
+                                                write(sockfd, data, n);
                                                 break;
 
                                         default:
                                                 break;
                                         }
 
-                                        n = strlen(data);
-                                        printf("data la %s\n", data);
-                                        
-                                        write(sockfd, data, n);
+                                        // n = strlen(data);
+                                        // printf("n = %d\n", n);
+                                        // printf("data la %s\n", data);
+                                        // printf("sockfd = %d\n", sockfd);
+                                        // write(sockfd, data, n);
 
                                 }
 

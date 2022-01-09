@@ -11,6 +11,7 @@
 #include <client_message.h>
 #define BUFF_SIZE 1024
 
+#include <client_global.h>
 // #define ROW 10
 // #define COL 10
 
@@ -34,6 +35,7 @@ void setz()
         
     }
 }
+//setz(&mymap);
 
 int checkShipInput(int row, int col, int ori)
 {
@@ -127,7 +129,6 @@ int createship_message(int client_sock)
             memset(buff, 0, 256);
             strcat(buff, "CREATESHIP ");
             strcat(buff, ship_position);
-            count_ship++;
             buff[strlen(buff)-1] = '\0';
             printf("buff la %s\n", buff);
             int bytes_sent;
@@ -136,8 +137,9 @@ int createship_message(int client_sock)
             if (bytes_sent < 0)
                 perror("\nError: ");
 
-        // receive echo reply
+            // receive echo reply
             int bytes_received;
+            //setz(&mymap);
             setz();
             //while (1 == 1)
             //{
@@ -160,7 +162,7 @@ int createship_message(int client_sock)
                 {
                     printf("Start game!!!\n");
                     printf("Your turn\n");
-                    return 2;
+                    return 0;
                 }
 
                 if (strcmp(buff, "40") == 0)
@@ -170,15 +172,23 @@ int createship_message(int client_sock)
                     return 1;
                 }
 
-                if (buff[0] == '3')
+                if (strcmp(buff, "42") == 0)
+                {
+                    printf("Waiting for the player2...\n");
+                    return 0;
+                }
+                
+
+                if (strcmp(buff, "3") == 0)
                 {
                     printf("Create ship successful\n");
+                    count_ship++;
                     //printf("Wait for other play create ship\n");
                 }
 
                 if (strcmp(buff, "30") == 0)
                 {
-                    printf("Create ship fails\n");
+                    printf("Create ship fails\n");        
                     //return 0;
                 }
             //}

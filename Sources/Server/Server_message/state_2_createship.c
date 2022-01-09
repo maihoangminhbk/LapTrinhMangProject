@@ -104,10 +104,6 @@ int state_2_createship(char *buf, int fd, game_node game, int* recv_sock)
         d = (pos % 1000) / 100;
         printf("d = %d\n", d);
 		c = 1;
-		// if (processShip(,a,b,c,d))
-		// {
-	    // 	d++;
-		// }
 	}
 	else
 	{
@@ -118,10 +114,6 @@ int state_2_createship(char *buf, int fd, game_node game, int* recv_sock)
         d = pos / 100;
         printf("d = %d\n", d);
 		c = 0;
-		// if (processShip(a,b,c,d))
-		// {
-	    // 	d++;
-		// }
 	}
     game_node game_node_get = GetGame(game, fd);
     if (fd == game_node_get->player1)
@@ -154,9 +146,9 @@ int state_2_createship(char *buf, int fd, game_node game, int* recv_sock)
             {
                 strcpy(buf, "41");
                 buf[2] = '\0';
-                return 0;
+                return 1;
             }
-            strcpy(buf, "40");
+            strcpy(buf, "42");
             buf[2] = '\0';
         }
         //return 1;
@@ -194,7 +186,7 @@ int state_2_createship(char *buf, int fd, game_node game, int* recv_sock)
         {
             if (game_node_get->data1.count_ship == 2)
             {
-                strcpy(buf, "41");
+                strcpy(buf, "40");
                 buf[2] = '\0';
                 return 0;
             }
@@ -205,5 +197,5 @@ int state_2_createship(char *buf, int fd, game_node game, int* recv_sock)
     }
     //strcpy(buf, "40");
     //buf[2] = '\0';
-    return 1;
+    return 2;
 }

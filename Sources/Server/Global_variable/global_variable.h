@@ -24,6 +24,8 @@ typedef struct game_data {
     int home[ROW][COL];
     int away[ROW][COL];
     int count_ship;
+    int turn;
+    //char message[5];
 } game_data;
 
 struct GameList

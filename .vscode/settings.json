@@ -1,7 +1,8 @@
 {
     "files.associations": {
         "server_message.h": "c",
-        "client_message.h": "c"
+        "client_message.h": "c",
+        "client_global.h": "c"
     },
     "C_Cpp.errorSquiggles": "Disabled"
 }

@@ -83,74 +83,98 @@ int state_3_fire(char *buf, char *buf1, int fd, game_node game, int* recv_sock)
     */
     int pos = 0;
     sscanf(buf, "%d", &pos);
+    printf("pos = %d\n", pos);
     int x = pos % 10;
+    printf("x = %d\n", x);
     int y = pos / 10;
+    printf("y = %d\n", y);
     game_node game_node_get = GetGame(game, fd);
     if (fd == game_node_get->player1)
     {
         //strcpy(game_node_get->data.fire_1, buf);
         int result = upstrike(game_node_get->data2.home, game_node_get->data1.away, x - 1, y - 1);
-        write(fd, &game_node_get->data1, sizeof(game_node_get->data1));
-        write(game_node_get->player2, &game_node_get->data2, sizeof(game_node_get->data2));
         if (result == 4) {
             strcpy(buf, "4");
             buf[1] = '\0';
             strcpy(buf1, "44");
             buf1[2] = '\0';
+            game_node_get->data1.turn = 1;
+            game_node_get->data2.turn = 0;
         }
         else if (result == 5) {
             strcpy(buf, "5");
             buf[1] = '\0';
             strcpy(buf1, "55");
             buf1[2] = '\0';
+            game_node_get->data1.turn = 0;
+            game_node_get->data2.turn = 1;
         }
         else if (result == 6) {
             strcpy(buf, "6");
             buf[1] = '\0';
             strcpy(buf1, "66");
             buf1[2] = '\0';
+            game_node_get->data1.turn = 0;
+            game_node_get->data2.turn = 1;
         }
         else {
             strcpy(buf, "7");
             buf[1] = '\0';
             strcpy(buf1, "77");
             buf1[2] = '\0';
+            game_node_get->data1.turn = 1;
+            game_node_get->data2.turn = 0;
         }
         *recv_sock = game_node_get->player2;
+        //game_node_get->data1.turn = game_node_get->turn;
+        //game_node_get->data2.turn = game_node_get->turn;
+        write(fd, &game_node_get->data1, sizeof(game_node_get->data1));
+        write(game_node_get->player2, &game_node_get->data2, sizeof(game_node_get->data2));
         //strcpy(buf, game_node_get->data.fire_1);
+        
     }
 
     if (fd == game_node_get->player2)
     {
         //strcpy(game_node_get->data.fire_2, buf);
         int result = upstrike(game_node_get->data1.home, game_node_get->data2.away, x - 1, y - 1);
-        write(fd, &game_node_get->data2, sizeof(game_node_get->data2));
-        write(game_node_get->player1, &game_node_get->data1, sizeof(game_node_get->data1));
+        
         if (result == 4) {
             strcpy(buf, "4");
             buf[1] = '\0';
             strcpy(buf1, "44");
             buf1[2] = '\0';
+            game_node_get->data1.turn = 0;
+            game_node_get->data2.turn = 1;
         }
         else if (result == 5) {
             strcpy(buf, "5");
             buf[1] = '\0';
             strcpy(buf1, "55");
             buf1[2] = '\0';
+            game_node_get->data1.turn = 1;
+            game_node_get->data2.turn = 0;
         }
         else if (result == 6) {
             strcpy(buf, "6");
             buf[1] = '\0';
             strcpy(buf1, "66");
             buf1[2] = '\0';
+            game_node_get->data1.turn = 1;
+            game_node_get->data2.turn = 0;
         }
         else {
             strcpy(buf, "7");
             buf[1] = '\0';
             strcpy(buf1, "77");
             buf1[2] = '\0';
+            game_node_get->data1.turn = 0;
+            game_node_get->data2.turn = 1;
         }
         *recv_sock = game_node_get->player1;
+        //game_node_get->data2.turn = game_node_get->turn;
+        write(fd, &game_node_get->data2, sizeof(game_node_get->data2));
+        write(game_node_get->player1, &game_node_get->data1, sizeof(game_node_get->data1));
         //strcpy(buf, game_node_get->data.fire_1);
     }
 
