@@ -14,7 +14,7 @@
 
 #include <server_message.h>
 
-
+//checking if the ship can be inserted in the given position
 int checkfill(int map[ROW][COL], int x, int y, int orientation, int size)
 {
 	int i, k = 0;
@@ -42,12 +42,9 @@ int checkfill(int map[ROW][COL], int x, int y, int orientation, int size)
 	{
 		return 1;
 	}
-	else
-	{
-		return 8;
-	}
+    return 0;
 }
-
+// insert ship
 int addship(int map[ROW][COL], int x, int y, int orientation, int size)
 {
 	int i = 0;
@@ -67,25 +64,20 @@ int addship(int map[ROW][COL], int x, int y, int orientation, int size)
 	}
     return 0;
 }
-
-
+// process to create ship
 int processShip(int map[ROW][COL], int row, int col, int ori, int size)
 {
 	if ((checkfill(map, (row - 1), (col - 1), ori, size) == 1))
 	{
 		addship(map, (row - 1), (col - 1), ori, size);
-		//post(1);
-		//sendMap();
 		return 1;
 	}
 	else
 	{
-		//post(0);
-		//sendMap();
 		return 0;
 	}
 }
-
+//
 int state_2_createship(char *buf, int fd, game_node game, int* recv_sock)
 {
     // *game = AddTailGame(*game, fd);
@@ -93,56 +85,50 @@ int state_2_createship(char *buf, int fd, game_node game, int* recv_sock)
         buf la data truyen vao, cam phai xu li
     */
     int pos = 0;
-    sscanf(buf, "%d", &pos);
-    int a, b, c, d;
+    sscanf(buf, "%d", &pos); // convert data from string to int
+    int row, col, ori, size; // row, column, orientation, size of ship
+    int total_ship = count_ships(); 
+    printf("total ship = %d\n", total_ship);
     if (pos >= 1000)
 	{
-		a = (pos % 1000) % 100 % 10;
-		printf("a = %d\n", a);
-		b = ((pos % 1000) % 100) / 10;
-		printf("b = %d\n", b);
-        d = (pos % 1000) / 100;
-        printf("d = %d\n", d);
-		c = 1;
+		row = (pos % 1000) % 100 % 10;
+		printf("a = %d\n", row);
+		col = ((pos % 1000) % 100) / 10;
+		printf("b = %d\n", col);
+        size = (pos % 1000) / 100;
+        printf("d = %d\n", size);
+		ori = 1;
 	}
 	else
 	{
-	    a = ( pos % 100) % 10;
-        printf("a = %d\n", a);
-		b = ( pos % 100) / 10;
-        printf("b = %d\n", b);
-        d = pos / 100;
-        printf("d = %d\n", d);
-		c = 0;
+	    row = ( pos % 100) % 10;
+        printf("a = %d\n", row);
+		col = ( pos % 100) / 10;
+        printf("b = %d\n", col);
+        size = pos / 100;
+        printf("d = %d\n", size);
+		ori = 0;
 	}
     game_node game_node_get = GetGame(game, fd);
+    // if fd is socket of player 1
     if (fd == game_node_get->player1)
     {
-        //strcpy(game_node_get->data.ship_position_1, buf);
         *recv_sock = game_node_get->player2;
-        int result = processShip(game_node_get->data1.home, a, b, c, d);
-        //char data[5];
-        //sprintf(data, "%d\n", result);
+        int result = processShip(game_node_get->data1.home, row, col, ori, size);
         if (result == 1) {
-            strcpy(buf, "3");
+            strcpy(buf, "3"); // created ship successfully
             buf[1] = '\0';
-            //return 1;
             game_node_get->data1.count_ship++;
         }
         else {
-            strcpy(buf, "30");
+            strcpy(buf, "30"); // created ship failed
             buf[2] = '\0';
         }
-        //write(fd, buf, strlen(buf));
-
+        // send home map to player 1
         write(fd, &game_node_get->data1.home, sizeof(game_node_get->data1.home));
-        // if(game_node_get->data.ship_position_2[0] == '\0') {
-        //     strcpy(buf, "3");
-        //     buf[1] = '\0';
-        //     return 1;
-        // }
-        if (game_node_get->data1.count_ship == 2){
-            if (game_node_get->data2.count_ship == 2)
+        // if player 1 created ships fully
+        if (game_node_get->data1.count_ship == total_ship){
+            if (game_node_get->data2.count_ship == total_ship)
             {
                 strcpy(buf, "41");
                 buf[2] = '\0';
@@ -151,40 +137,27 @@ int state_2_createship(char *buf, int fd, game_node game, int* recv_sock)
             strcpy(buf, "42");
             buf[2] = '\0';
         }
-        //return 1;
     }
-
+    // if fd is socket of player 2
     if (fd == game_node_get->player2)
     {
-        //strcpy(game_node_get->data.ship_position_2, buf);
         *recv_sock = game_node_get->player1;
-
-        int result = processShip(game_node_get->data2.home, a, b, c, d);
-        //char data[5];
-        //sprintf(data, "%d\n", result);
+        int result = processShip(game_node_get->data2.home, row, col, ori, size);
         if (result == 1) {
-            strcpy(buf, "3");
+            strcpy(buf, "3");   // created ship successfully
             buf[1] = '\0';
-            //return 1;
             game_node_get->data2.count_ship++;
-            
         }
         else {
-            strcpy(buf, "30");
+            strcpy(buf, "30");  // created ship successfully
             buf[2] = '\0';
         }
-        //write(fd, buf, strlen(buf));
-
+        // send home map to player 2
         write(fd, &game_node_get->data2.home, sizeof(game_node_get->data2.home));
-
-        // if(game_node_get->data.ship_position_1[0] == '\0') {
-        //     strcpy(buf, "3");
-        //     buf[1] = '\0';
-        //     return 1;
-        // }
-        if (game_node_get->data2.count_ship == 2)
+        // if player 2 created ships fully
+        if (game_node_get->data2.count_ship == total_ship)
         {
-            if (game_node_get->data1.count_ship == 2)
+            if (game_node_get->data1.count_ship == total_ship)
             {
                 strcpy(buf, "40");
                 buf[2] = '\0';
@@ -193,9 +166,6 @@ int state_2_createship(char *buf, int fd, game_node game, int* recv_sock)
             strcpy(buf, "40");
             buf[2] = '\0';
         }
-        //return 1;
     }
-    //strcpy(buf, "40");
-    //buf[2] = '\0';
     return 2;
 }

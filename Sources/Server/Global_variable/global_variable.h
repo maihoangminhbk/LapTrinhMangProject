@@ -9,8 +9,6 @@ struct LinkedList{
 
 typedef struct LinkedList *node; //Từ giờ dùng kiểu dữ liệu LinkedList có thể thay bằng node cho ngắn gọn
 
-
-
 int GetByVal(node, int);
 node DelByVal(node, int);
 node AddTail(node head, int fd, int state);
@@ -41,8 +39,11 @@ struct GameList
 
 typedef struct GameList *game_node;
 
-void setz(game_data*);
 
+void setz(game_data*);
+void get_ship_info(int[]);
+int count_ships();
+int count_ship_point();
 game_data GetByValGame(game_node, int);
 game_node DelByValGame(game_node, int);
 game_node AddTailGame(game_node, int);

@@ -88,7 +88,6 @@ int checkHitInput(int row, int col){
 	}
 	return 1;
 }
-
 // places left
 int placescheckhome(int map[ROW][COL])
 {
@@ -121,10 +120,10 @@ int placescheckaway(int map[ROW][COL])
 	}
 	return (3 - k);
 }
-
+// show screen when playing game after a turn
 void gshow(char message[BUFF_SIZE])
 {
-	//system("clear");
+	system("clear");
 	//int i = -1, j = -1, k, l;
 	printf("\n");
 	printf("\nNETWORK BATTLESHIP V 1.0.1 Beta \n");
@@ -135,36 +134,35 @@ void gshow(char message[BUFF_SIZE])
 	printMapp(map.away);
 	//sleep(2);
 	puts(message);
-	//sleep(2);
 }
 
 int process_buff(char buff[])
 {
     if (strcmp(buff, "4") == 0) {
-        gshow("You hit failed.\n");
+        gshow("\nYou hit failed.\n");
     }
     else if (strcmp(buff, "5") == 0) {
-        gshow("You hit succeeded.\n");
+        gshow("\nYou hit succeeded.\n");
     }
     else if (strcmp(buff, "6") == 0) {
-        gshow("You WON !! Awesome !! Keep it up :)\n");
+        gshow("\nYou WON !! Awesome !! Keep it up :)\n");
         return 1;
     }
     else if (strcmp(buff, "7") == 0) {
-        gshow("You hit this position again.\n");
+        gshow("\nYou hit this position again.\n");
     }
     else if (strcmp(buff, "44") == 0) {
-        gshow("The opponent hit failed.\n");
+        gshow("\nThe opponent hit failed.\n");
     }
     else if (strcmp(buff, "55") == 0) {
-        gshow("You have been hit.\n");
+        gshow("\nYou have been hit.\n");
     }
     else if (strcmp(buff, "66") == 0) {
-        gshow("You LOST. Better luck next time :( \n");
+        gshow("\nYou LOST. Better luck next time :( \n");
         return 2;
     }
     else if (strcmp(buff, "77") == 0) {
-        gshow("The opponent hit this position again.\n");
+        gshow("\nThe opponent hit this position again.\n");
     }
     return 0;
 }
@@ -179,58 +177,57 @@ int fire_message(int client_sock, int turn)
     //memset(buff, 0, 256);
     setzz();
     int bytes_received;
-    //setz(&map);
+
     int x, y;
     if (turn == 0) {
-        bytes_received = recv(client_sock, buff, BUFF_SIZE, 0); ///buff = 41
-        printf("Please input fire position : ");
-        printf("Enter x = ");
-        scanf("%d", &x);
-        printf("Enter y = ");
-        scanf("%d", &y);
-        //fgets(fire_position, 20, stdin);
-        //fire_position[strlen(fire_position) - 1] = '\0';
+        while (1==1)
+        {
+            bytes_received = recv(client_sock, buff, BUFF_SIZE, 0); ///buff = 41
+            printf("Please input fire position : \n");
+            printf("Enter x = ");
+            scanf("%d", &x);
+            printf("Enter y = ");
+            scanf("%d", &y);
+            if (checkHitInput(x, y)) {
+                int pos = x + y*10;
+                
+                memset(fire_position, 0, 20);
+                sprintf(fire_position, "%d\n", pos);
+                memset(buff, 0, 256);
+                strcat(buff, "TURN ");
+                strcat(buff, fire_position);
+                buff[strlen(buff)-1] = '\0';
+                //printf("buff la %s\n", buff);
 
-        int pos = x + y*10;
-        //char fire_position[10];
-        memset(fire_position, 0, 20);
-        sprintf(fire_position, "%d\n", pos);
-        memset(buff, 0, 256);
-        strcat(buff, "TURN ");
-        strcat(buff, fire_position);
-        buff[strlen(buff)-1] = '\0';
-        printf("buff la %s\n", buff);
-        int bytes_sent;
-        bytes_sent = send(client_sock, buff, strlen(buff), 0);
+                int bytes_sent;
+                bytes_sent = send(client_sock, buff, strlen(buff), 0);
 
-        if (bytes_sent < 0)
-            perror("\nError: ");
+                if (bytes_sent < 0)
+                    perror("\nError: ");
 
-        // receive echo reply
-        
-        //while (1 == 1)
-        //{
-            recv(client_sock, &map, sizeof(map), 0);
-            //gshow("");
-            //send(client_sock, "TURN _", strlen("TURN _"), 0);
-            memset(buff, 0, 256);
-            bytes_received = recv(client_sock, buff, BUFF_SIZE, 0);
-            printf("byte = %d\n", bytes_received);
-            printf("buff1 = %s\n", buff);
-            buff[bytes_received] = '\0';
-            printf("buff2 = %s\n", buff);
-            result = process_buff(buff);
-            if ( result == 1 || result == 2)
-            {
-                return 0;
+                recv(client_sock, &map, sizeof(map), 0);
+
+                memset(buff, 0, 256);
+                bytes_received = recv(client_sock, buff, BUFF_SIZE, 0);
+                buff[bytes_received] = '\0';
+                
+                result = process_buff(buff);
+                if ( result == 1 || result == 2)
+                {
+                    return 0;
+                }
+                if (bytes_received < 0)
+                    perror("\nError: ");
+                else if (bytes_received == 0)
+                    printf("Connection closed.\n");
+                break;
             }
-            if (bytes_received < 0)
-                perror("\nError: ");
-            else if (bytes_received == 0)
-                printf("Connection closed.\n");
+            else {
+                printf("\nInvalid position.\n");
+            }
+        }
     }
     else {
-            //printf("haha\n");
             recv(client_sock, &map, sizeof(map), 0);
             memset(buff, 0, 256);
             int bytes_received = recv(client_sock, buff, BUFF_SIZE, 0);
@@ -248,56 +245,54 @@ int fire_message(int client_sock, int turn)
     while ( result != 10 )
     {
         if (map.turn == 0){
-            printf("1Please input fire position : ");
-            printf("Enter x = ");
-            scanf("%d", &x);
-            printf("Enter y = ");
-            scanf("%d", &y);
-            //fgets(fire_position, 20, stdin);
-            //fire_position[strlen(fire_position) - 1] = '\0';
+            while (1==1)
+            {            
+                printf("Please input fire position : \n");
+                printf("Enter x = ");
+                scanf("%d", &x);
+                printf("Enter y = ");
+                scanf("%d", &y);
+                if (checkHitInput(x, y)) {
+                    int pos = x + y*10;
+                    memset(fire_position, 0, 20);
+                    sprintf(fire_position, "%d\n", pos);
+                    memset(buff, 0, 256);
+                    strcat(buff, "TURN ");
+                    strcat(buff, fire_position);
+                    buff[strlen(buff)-1] = '\0';
 
-            int pos = x + y*10;
-            //char fire_position[10];
-            memset(fire_position, 0, 20);
-            sprintf(fire_position, "%d\n", pos);
-            memset(buff, 0, 256);
-            strcat(buff, "TURN ");
-            strcat(buff, fire_position);
-            buff[strlen(buff)-1] = '\0';
-            printf("buff la %s\n", buff);
-            int bytes_sent;
-            bytes_sent = send(client_sock, buff, strlen(buff), 0);
+                    int bytes_sent;
+                    bytes_sent = send(client_sock, buff, strlen(buff), 0);
 
-            if (bytes_sent < 0)
-                perror("\nError: ");
+                    if (bytes_sent < 0)
+                        perror("\nError: ");
 
-            // receive echo reply
-            int bytes_received;
-            //while (1 == 1)
-            //{
-            recv(client_sock, &map, sizeof(map), 0);
-            //gshow("");
-            //send(client_sock, "TURN _", strlen("TURN _"), 0);
-            memset(buff, 0, 256);
-            bytes_received = recv(client_sock, buff, BUFF_SIZE, 0); // 4 - 5 - 6
-            printf("byte = %d\n", bytes_received);
-            printf("buff1 = %s\n", buff);
-            buff[bytes_received] = '\0';
-            printf("buff2 = %s\n", buff);
-            int result = process_buff(buff);
-            if ( result == 1 || result == 2) // success or failed
-            {
-                result = 10;
-                return 0;
+                    // receive echo reply
+                    int bytes_received;
+                    recv(client_sock, &map, sizeof(map), 0);
+                    memset(buff, 0, 256);
+                    bytes_received = recv(client_sock, buff, BUFF_SIZE, 0); // 4 - 5 - 6
+                    buff[bytes_received] = '\0';
+
+                    int result = process_buff(buff);
+                    if ( result == 1 || result == 2) // success or failed
+                    {
+                        result = 10;
+                        return 0;
+                    }
+                    if (bytes_received < 0)
+                        perror("\nError: ");
+                    else if (bytes_received == 0)
+                    printf("Connection closed.\n");
+                    break;
+                }
+                else {
+                    printf("\nInvalid position.\n");
+                }
             }
-            if (bytes_received < 0)
-                perror("\nError: ");
-            else if (bytes_received == 0)
-                printf("Connection closed.\n");
 
         }
         else {
-            printf("hihi\n");
             recv(client_sock, &map, sizeof(map), 0);
             memset(buff, 0, 256);
             int bytes_received = recv(client_sock, buff, BUFF_SIZE, 0);

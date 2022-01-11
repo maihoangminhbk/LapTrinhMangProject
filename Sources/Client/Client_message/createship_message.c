@@ -9,19 +9,12 @@
 #include <unistd.h>
 
 #include <client_message.h>
+#include <client_global.h>
 #define BUFF_SIZE 1024
 
-#include <client_global.h>
-// #define ROW 10
-// #define COL 10
-
-// typedef struct client_map
-// {
-//     int home[ROW][COL];
-//     int away[ROW][COL];
-// } client_map;
-// client_map mymap;
 client_map mymap;
+
+// setting the arrays to zero in the begining
 void setz()
 {
     int i, j;
@@ -35,8 +28,7 @@ void setz()
         
     }
 }
-//setz(&mymap);
-
+// check that the input is correct value or not
 int checkShipInput(int row, int col, int ori)
 {
 	if ((row <= 0) || (row > 10) || (col <= 0) || (col > 10))
@@ -49,7 +41,6 @@ int checkShipInput(int row, int col, int ori)
 	}
 	return 1;
 }
-
 // char graphics later upgrade to open gl
 void status(int value)
 {
@@ -59,22 +50,22 @@ void status(int value)
 	}
 	else if (value % 10 == 3)
 	{
-		printf(" ~X~ ");
+		printf(" ~X~ ");        // hit failed
 	}
 	else if (value % 10 == 4)
 	{
-		printf(" /O/ ");
+		printf(" /O/ ");        // hit successful
 	}
 	else if (value % 10 == 1)
 	{
-		printf(" /#/ ");
+		printf(" /#/ ");        // ship
 	}
 	else
 	{
 		printf("error");
 	}
 }
-
+// print map to screen
 void printMap(int map[ROW][COL])
 {
     int i, j;
@@ -102,28 +93,41 @@ void printMap(int map[ROW][COL])
 		printf("\n");
 	}
 }
-
+// count number of ships
+int count_ship(int ship_info[])
+{
+    int i = 0;
+	int count = 0;
+	while(ship_info[i] >= 1){
+		count++;
+		i++;
+	}
+	return count;
+}
+//
 int createship_message(int client_sock)
 {
-    int count_ship = 1;
+    int index = 0;
     char ship_position[20];
     char buff[256];
+    int ship_info[256];
 
-    int a, b, c;
-    while (count_ship <= 2)
+    recv(client_sock, &ship_info, BUFF_SIZE, 0);
+    int ship_numbers = count_ship(ship_info);
+
+    int row, col, ori, size;    // row, column, orientation, size of ship
+    while (index <= ship_numbers)
     {
-        printf("Enter x coordinate for placement of ship, size = %2d: ", count_ship);
-		scanf("%d", &a);
-		printf("Enter y coordinate for placement of ship, size = %2d: ", count_ship);
-		scanf("%d", &b);
-		printf("Enter the orientation for placement of ship \n0 = horizontal , 1 = vertical, size = %2d: ", count_ship);
-		scanf("%d", &c);
-        //printf("Please input ship position %d\n", count_ship);
-        //fgets(ship_position, 20, stdin);
-        //ship_position[strlen(ship_position) - 1] = '\0';
-        if (checkShipInput(a,b,c)){
-            int pos = a + b*10 + count_ship*100 + c*1000;
-            //char ship_position[10];
+        size = ship_info[index];
+        printf("Enter x coordinate for placement of ship, size = %2d: ", size);
+		scanf("%d", &row);
+		printf("Enter y coordinate for placement of ship, size = %2d: ", size);
+		scanf("%d", &col);
+		printf("Enter the orientation for placement of ship \n0 = horizontal , 1 = vertical, size = %2d: ", size);
+		scanf("%d", &ori);
+
+        if (checkShipInput(row, col, ori)){
+            int pos = row + col*10 + size*100 + ori*1000;
             memset(ship_position, 0, 20);
             sprintf(ship_position, "%d\n", pos);
             memset(buff, 0, 256);
@@ -131,67 +135,62 @@ int createship_message(int client_sock)
             strcat(buff, ship_position);
             buff[strlen(buff)-1] = '\0';
             printf("buff la %s\n", buff);
+            // send position of ship to server
             int bytes_sent;
             bytes_sent = send(client_sock, buff, strlen(buff), 0);
 
             if (bytes_sent < 0)
                 perror("\nError: ");
 
-            // receive echo reply
+            // receive reply
             int bytes_received;
-            //setz(&mymap);
             setz();
-            //while (1 == 1)
-            //{
-                recv(client_sock, &mymap.home, sizeof(mymap.home), 0);
-                printMap(mymap.home);
+            recv(client_sock, &mymap.home, sizeof(mymap.home), 0);  // receive map
+            printMap(mymap.home);
                 
-                bytes_received = recv(client_sock, buff, BUFF_SIZE, 0);
+            bytes_received = recv(client_sock, buff, BUFF_SIZE, 0); // receive message, success or fail
+
+            if (bytes_received < 0)
+                perror("\nError: ");
+            else if (bytes_received == 0)
+                printf("Connection closed.\n");
+
+            buff[bytes_received] = '\0';
+
+            if (strcmp(buff, "41") == 0)
+            {
+                printf("Start game!!!\n");
+                printf("Your turn\n");
+                return 0;
+            }
+
+            if (strcmp(buff, "40") == 0)
+            {
+                printf("Start game!!!\n");
+                printf("You are the guest, so play next turn\n");
+                printf("Wait...\n");
+                return 1;
+            }
+
+            if (strcmp(buff, "42") == 0)
+            {
+                printf("Waiting for the player 2...\n");
+                return 0;
+            }
                 
-               // char dt[10];
-                //recv(client_sock, buff)
+            if (strcmp(buff, "3") == 0)
+            {
+                printf("Created ship successfully\n");
+                index++;
+            }
 
-                if (bytes_received < 0)
-                    perror("\nError: ");
-                else if (bytes_received == 0)
-                    printf("Connection closed.\n");
-
-                buff[bytes_received] = '\0';
-
-                if (strcmp(buff, "41") == 0)
-                {
-                    printf("Start game!!!\n");
-                    printf("Your turn\n");
-                    return 0;
-                }
-
-                if (strcmp(buff, "40") == 0)
-                {
-                    printf("Start game!!!\n");
-                    printf("Wait...\n");
-                    return 1;
-                }
-
-                if (strcmp(buff, "42") == 0)
-                {
-                    printf("Waiting for the player2...\n");
-                    return 0;
-                }
-                
-
-                if (strcmp(buff, "3") == 0)
-                {
-                    printf("Create ship successful\n");
-                    count_ship++;
-                    //printf("Wait for other play create ship\n");
-                }
-
-                if (strcmp(buff, "30") == 0)
-                {
-                    printf("Create ship fails\n");        
-                    //return 0;
-                }
-            //}
+            if (strcmp(buff, "30") == 0)
+            {
+                printf("Created ship failed\n");        
+            }
+        }
+        else {
+            printf("\nInvalid position.\n");
         }
     }
     return 0;

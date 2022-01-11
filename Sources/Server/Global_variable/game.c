@@ -3,6 +3,39 @@
 #include <string.h>
 
 #include <global_variable.h>
+int ship_info[] = {1};
+
+int count_ships()
+{
+    int i = 0;
+	int count = 0;
+	while(ship_info[i] >= 1){
+		count++;
+		i++;
+	}
+	return count;
+}
+
+void get_ship_info(int info[])
+{
+    int total = count_ships();
+    int i = 0;
+    for (i = 0; i < total; i++)
+    {
+        info[i] = ship_info[i];
+    }
+}
+//
+int count_ship_point()
+{
+    int ship_number = count_ships();
+	int i, sum = 0;
+	for(i = 0; i < ship_number; i++)
+	{
+		sum += ship_info[i];
+	}
+    return sum;
+}
 
 void setz(game_data *map)
 {

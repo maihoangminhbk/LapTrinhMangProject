@@ -8,4 +8,4 @@ typedef struct client_map
     int count_ship;
     int turn;
 } client_map;
-//client_map mymap;
+

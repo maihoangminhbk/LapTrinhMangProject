@@ -205,6 +205,8 @@ int main(int argc, char **argv)
                                 {
                                         printf("Read %zu bytes from socket %d\n", n, sockfd);
                                         
+                                        int ship_info[10];
+                                        get_ship_info(ship_info);
                                         char data[100];
                                         memset(data, 0, 100);
                                         char data_opp[100];
@@ -251,16 +253,22 @@ int main(int argc, char **argv)
                                                 
                                                 //int index1 = 0;
                                                 //printf("index la %d\n", index1);
+                                                
                                                 if(state_1_joinroom(data, sockfd, game_head, &recv_sock)) {
                                                         write(recv_sock, "30", 2);
+                                                        write(recv_sock, &ship_info, sizeof(ship_info));
                                                 }
                                                 
                                                 n = strlen(data);
                                                 printf("data la %s\n", data);
                                                 printf("sockfd = %d\n", sockfd);
                                                 write(sockfd, data, n);
+                                                if (strcmp(data, "6") == 0) {
+                                                        write(sockfd, &ship_info, sizeof(ship_info));
+                                                }
                                                 break;
                                         case 4:
+
                                                 result = state_2_createship(data, sockfd, game_head, &recv_sock);
                                                 printf("result = %d\n", result);
                                                 if( result == 0) {

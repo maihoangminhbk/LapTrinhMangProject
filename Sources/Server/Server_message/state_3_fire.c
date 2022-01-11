@@ -30,9 +30,11 @@ int placescheckhome(int map[ROW][COL])
 	}
 	return k;
 }
+
 // places left on the away
 int placescheckaway(int map[ROW][COL])
 {
+    int total_point = count_ship_point();
 	int i, j, k = 0;
 	for (i = 0; i < ROW; i++)
 	{
@@ -44,14 +46,11 @@ int placescheckaway(int map[ROW][COL])
 			}
 		}
 	}
-	return (3 - k);
+	return (total_point - k);
 }
-
+//update when attacking the enemy
 int upstrike(int opp_home[ROW][COL], int my_away[ROW][COL], int x, int y)
 {
-	//post(x + (10 * y));
-	//int a = receive();
-	//receiveMessage();
 	int a = opp_home[x][y] % 10;
 	if (a == 1)
 	{
@@ -59,19 +58,19 @@ int upstrike(int opp_home[ROW][COL], int my_away[ROW][COL], int x, int y)
         my_away[x][y] = 4;
 		if (placescheckaway(opp_home) == 0)
 		{
-			return 6; // win
+			return 6;   // win
         }
-		return 5; // hit success
+		return 5;       // hit success
 	}
 	else if (a == 4 || a == 3)
 	{
-		return 7; //hit this position again - failed
+		return 7;       //hit this position again - failed
 	}
 	else
 	{
 		opp_home[x][y] = 3;
 		my_away[x][y] = 3;
-		return 4; //hit failed
+		return 4;       //hit failed
 	}
 }
 
@@ -94,7 +93,7 @@ int state_3_fire(char *buf, char *buf1, int fd, game_node game, int* recv_sock)
         //strcpy(game_node_get->data.fire_1, buf);
         int result = upstrike(game_node_get->data2.home, game_node_get->data1.away, x - 1, y - 1);
         if (result == 4) {
-            strcpy(buf, "4");
+            strcpy(buf, "4"); // failed
             buf[1] = '\0';
             strcpy(buf1, "44");
             buf1[2] = '\0';
@@ -102,7 +101,7 @@ int state_3_fire(char *buf, char *buf1, int fd, game_node game, int* recv_sock)
             game_node_get->data2.turn = 0;
         }
         else if (result == 5) {
-            strcpy(buf, "5");
+            strcpy(buf, "5"); 
             buf[1] = '\0';
             strcpy(buf1, "55");
             buf1[2] = '\0';
@@ -180,5 +179,5 @@ int state_3_fire(char *buf, char *buf1, int fd, game_node game, int* recv_sock)
 
     // strcpy(buf, game_node_get->data.fire_1);
     //buf[2] = '\0';
-    //return 0;
+    return 0;
 }
