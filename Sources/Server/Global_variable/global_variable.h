@@ -52,4 +52,6 @@ int SearchPlayerWithRoomName(game_node, int, char*);
 game_node GetGame(game_node, int);
 int SearchGameWithPlayer(game_node, int);
 void TraverserGame(game_node);
+game_node DelAtGame(game_node, int);
+
 

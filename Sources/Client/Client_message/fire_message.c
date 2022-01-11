@@ -23,7 +23,6 @@ void setzz()
             map.home[i][j] = 0;
             map.away[i][j] = 0;
         }
-        
     }
     map.count_ship = 0;
     map.turn = 0;
@@ -31,94 +30,95 @@ void setzz()
 
 void statuss(int value)
 {
-	if (value % 10 == 0)
-	{
-		printf(" ~~~ ");
-	}
-	else if (value % 10 == 3)
-	{
-		printf(" ~X~ ");
-	}
-	else if (value % 10 == 4)
-	{
-		printf(" /O/ ");
-	}
-	else if (value % 10 == 1)
-	{
-		printf(" /#/ ");
-	}
-	else
-	{
-		printf("error");
-	}
+    if (value % 10 == 0)
+    {
+        printf(" ~~~ ");
+    }
+    else if (value % 10 == 3)
+    {
+        printf(" ~X~ ");
+    }
+    else if (value % 10 == 4)
+    {
+        printf(" /O/ ");
+    }
+    else if (value % 10 == 1)
+    {
+        printf(" /#/ ");
+    }
+    else
+    {
+        printf("error");
+    }
 }
 
 void printMapp(int map[ROW][COL])
 {
     int i, j;
-	for (i = -1; i < ROW; i++)
-	{
-		for (j = -1; j < COL; j++)
-		{
-			if (i == -1 && j == -1)
-			{
-				printf(" x\\y ");
-			}
-			else if (i == -1)
-			{
-				printf(" %2d  ", j + 1);
-			}
-			else if (j == -1)
-			{
-				printf(" %2d  ", i + 1);
-			}
-			else
-			{
-				statuss(map[i][j]);
-			}
-		}
-		printf("\n");
-	}
+    for (i = -1; i < ROW; i++)
+    {
+        for (j = -1; j < COL; j++)
+        {
+            if (i == -1 && j == -1)
+            {
+                printf(" x\\y ");
+            }
+            else if (i == -1)
+            {
+                printf(" %2d  ", j + 1);
+            }
+            else if (j == -1)
+            {
+                printf(" %2d  ", i + 1);
+            }
+            else
+            {
+                statuss(map[i][j]);
+            }
+        }
+        printf("\n");
+    }
 }
 
-int checkHitInput(int row, int col){
-	if ((row <= 0) || (row > 10) || (col <= 0) || (col > 10))
-	{
-		return 0;
-	}
-	return 1;
+int checkHitInput(int row, int col)
+{
+    if ((row <= 0) || (row > 10) || (col <= 0) || (col > 10))
+    {
+        return 0;
+    }
+    return 1;
 }
 // places left
 int placescheckhome(int map[ROW][COL])
 {
-	int i, j, k = 0;
-	for (i = 0; i < ROW; i++)
-	{
-		for (j = 0; j < COL; j++)
-		{
-			if ((map[i][j] % 10) == 1)
-			{
-				k++;
-			}
-		}
-	}
-	return k;
+    int i, j, k = 0;
+    for (i = 0; i < ROW; i++)
+    {
+        for (j = 0; j < COL; j++)
+        {
+            if ((map[i][j] % 10) == 1)
+            {
+                k++;
+            }
+        }
+    }
+    return k;
 }
 // places left on the away
 int placescheckaway(int map[ROW][COL])
 {
-	int i, j, k = 0;
-	for (i = 0; i < ROW; i++)
-	{
-		for (j = 0; j < COL; j++)
-		{
-			if ((map[i][j] % 10) == 4)
-			{
-				k++;
-			}
-		}
-	}
-	return (3 - k);
+    int i, j, k = 0;
+    for (i = 0; i < ROW; i++)
+    {
+        for (j = 0; j < COL; j++)
+        {
+            if ((map[i][j] % 10) == 4)
+            {
+                k++;
+            }
+        }
+    }
+    return (3 - k);
 }
 // show screen when playing game after a turn
 void gshow(char message[BUFF_SIZE])
@@ -174,7 +174,7 @@ int fire_message(int client_sock, int turn)
     char buff1[10];
     memset(buff1, 0, 10);
     int result = 0;
-    //memset(buff, 0, 256);
+    // memset(buff, 0, 256);
     setzz();
     int bytes_received;
 
@@ -242,7 +242,7 @@ int fire_message(int client_sock, int turn)
                 printf("Connection closed.\n");
     }
 
-    while ( result != 10 )
+    while (result != 10)
     {
         if (map.turn == 0){
             while (1==1)
@@ -297,15 +297,18 @@ int fire_message(int client_sock, int turn)
             memset(buff, 0, 256);
             int bytes_received = recv(client_sock, buff, BUFF_SIZE, 0);
             int result = process_buff(buff);
-            if ( result == 1 || result == 2)
+            if (result == 1 || result == 2)
             {
                 result = 10;
-                return 0; 
+                return 0;
             }
             if (bytes_received < 0)
                 perror("\nError: ");
             else if (bytes_received == 0)
+            {
                 printf("Connection closed.\n");
+                exit(0);
+            }
         }
     }
     return 0;

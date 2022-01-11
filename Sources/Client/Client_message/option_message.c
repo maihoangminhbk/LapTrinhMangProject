@@ -7,9 +7,31 @@
 #include <arpa/inet.h>
 #include <ctype.h>
 #include <unistd.h>
+#include <errno.h>
+#include <time.h>
+#include <sys/ioctl.h>
 
 #include <client_message.h>
 #define BUFF_SIZE 1024
+
+int count_down(float time)
+{
+    clock_t begin;
+    double time_spent;
+    unsigned int i;
+
+    /* Mark beginning time */
+    begin = clock();
+    for (i = 0; 1; i++)
+    {
+        // printf("hello\n");
+        /* Get CPU time since loop started */
+        time_spent = (double)(clock() - begin) / CLOCKS_PER_SEC;
+        if (time_spent >= time)
+            break;
+    }
+    return 0;
+}
 
 int option_message(int client_sock)
 {
@@ -58,6 +80,7 @@ int option_message(int client_sock)
 
     int bytes_sent;
     bytes_sent = send(client_sock, buff, strlen(buff), 0);
+    printf("Buff la %s\n", buff);
 
     if (bytes_sent < 0)
         perror("\nError: ");
@@ -75,20 +98,83 @@ int option_message(int client_sock)
     switch (buff[0])
     {
     case '5':
-        printf("Create room successful\n");
-        printf("Wait for other player\n");
-        bytes_received = recv(client_sock, buff, BUFF_SIZE, 0);
-        if (bytes_received < 0)
-            perror("\nError: ");
-        else if (bytes_received == 0)
-            printf("Connection closed.\n");
-
-        buff[bytes_received] = '\0';
-        if (strcmp(buff, "30") == 0)
+        int on = 1;
+        int rc = ioctl(client_sock, FIONBIO, (char *)&on);
+        if (rc < 0)
         {
-            printf("Find game successful... Let's goooooo\n");
-            return 1;
+            perror("ioctl() failed");
+            close(client_sock);
+            exit(0);
         }
+
+        printf("Create room successful\n");
+
+        int time = 0;
+        do
+        {
+            printf("Wait for other player\n");
+            bytes_received = recv(client_sock, buff, BUFF_SIZE, 0);
+            if (bytes_received < 0)
+            {
+                if (errno != EWOULDBLOCK)
+                {
+                    perror("  recv() failed");
+                    close(client_sock);
+                    exit(0);
+                }
+                count_down(3.0);
+                printf("Wait in 3s...\n");
+                time += 3;
+                if (time % 30 == 0)
+                {
+                    printf("No one joins the game\n");
+                    memset(buff, 0, 256);
+                    strcat(buff, "CREATEROOM cancel");
+
+                    int on = 0;
+                    rc = ioctl(client_sock, FIONBIO, (char *)&on);
+                    if (rc < 0)
+                    {
+                        perror("ioctl() failed");
+                        close(client_sock);
+                        exit(0);
+                    }
+                    int bytes_sent;
+                    bytes_sent = send(client_sock, buff, strlen(buff), 0);
+                    // printf("Buff gui di la %s\n", buff);
+                    if (bytes_sent < 0)
+                        perror("\nError: ");
+                    bytes_received = recv(client_sock, buff, BUFF_SIZE, 0);
+                    // printf("bytes receive la %d\n", bytes_received);
+                    // printf("Buff tra ve la %s\n", buff);
+                    
+
+                    return 0;
+                }
+
+                continue;
+            }
+
+            else if (bytes_received == 0)
+                printf("Connection closed.\n");
+
+            int on = 0;
+            rc = ioctl(client_sock, FIONBIO, (char *)&on);
+            if (rc < 0)
+            {
+                perror("ioctl() failed");
+                close(client_sock);
+                exit(0);
+            }
+
+            buff[bytes_received] = '\0';
+            if (strcmp(buff, "30") == 0)
+            {
+                printf("Find game successful... Let's goooooo\n");
+                return 1;
+            }
+        } while (1 == 1);
+        printf("check break\n");
         break;
 
     case '6':
