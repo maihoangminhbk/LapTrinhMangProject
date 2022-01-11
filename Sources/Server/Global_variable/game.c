@@ -115,7 +115,7 @@ game_node DelAtGame(game_node head, int position)
         {
             // Nếu duyệt hết danh sách lk rồi mà vẫn chưa đến vị trí cần chèn, ta sẽ mặc định xóa cuối
             // Nếu bạn không muốn xóa, hãy thông báo vị trí xóa không hợp lệ
-            head = DelTailGame(head);
+            // head = DelTailGame(head);
             // printf("Vi tri xoa vuot qua vi tri cuoi cung!\n");
         }
         else
@@ -208,9 +208,13 @@ game_node InitHeadGame()
 
 void TraverserGame(game_node head)
 {
+    if(head == NULL) {
+        return;
+    }
     printf("\n");
     for (game_node p = head; p != NULL; p = p->next)
     {
         printf("player 1 id is %5d \troom name is %s\n", p->player1, p->room_name);
     }
+
 }
