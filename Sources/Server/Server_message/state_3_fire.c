@@ -74,7 +74,7 @@ int upstrike(int opp_home[ROW][COL], int my_away[ROW][COL], int x, int y)
 	}
 }
 
-int state_3_fire(char *buf, char *buf1, int fd, game_node game, int* recv_sock)
+int state_3_fire(char *buf, char *buf1, int fd, game_node *game, int* recv_sock)
 {
     // *game = AddTailGame(*game, fd);
     /*TODO:
@@ -87,7 +87,7 @@ int state_3_fire(char *buf, char *buf1, int fd, game_node game, int* recv_sock)
     printf("x = %d\n", x);
     int y = pos / 10;
     printf("y = %d\n", y);
-    game_node game_node_get = GetGame(game, fd);
+    game_node game_node_get = GetGame(*game, fd);
     if (fd == game_node_get->player1)
     {
         //strcpy(game_node_get->data.fire_1, buf);
@@ -101,7 +101,7 @@ int state_3_fire(char *buf, char *buf1, int fd, game_node game, int* recv_sock)
             game_node_get->data2.turn = 0;
         }
         else if (result == 5) {
-            strcpy(buf, "5"); 
+            strcpy(buf, "5"); // sucess
             buf[1] = '\0';
             strcpy(buf1, "55");
             buf1[2] = '\0';
@@ -117,8 +117,8 @@ int state_3_fire(char *buf, char *buf1, int fd, game_node game, int* recv_sock)
             game_node_get->data2.turn = 1;
         }
         else {
-            strcpy(buf, "7");
-            buf[1] = '\0';
+            strcpy(buf, "7"); // 
+            buf[1] = '\0'; 
             strcpy(buf1, "77");
             buf1[2] = '\0';
             game_node_get->data1.turn = 1;
@@ -130,6 +130,10 @@ int state_3_fire(char *buf, char *buf1, int fd, game_node game, int* recv_sock)
         write(fd, &game_node_get->data1, sizeof(game_node_get->data1));
         write(game_node_get->player2, &game_node_get->data2, sizeof(game_node_get->data2));
         //strcpy(buf, game_node_get->data.fire_1);
+        if (result == 6) {
+            int index = SearchGameWithPlayer(*game, fd);
+            *game = DelAtGame(*game, index);
+        }
         
     }
 
@@ -174,6 +178,11 @@ int state_3_fire(char *buf, char *buf1, int fd, game_node game, int* recv_sock)
         //game_node_get->data2.turn = game_node_get->turn;
         write(fd, &game_node_get->data2, sizeof(game_node_get->data2));
         write(game_node_get->player1, &game_node_get->data1, sizeof(game_node_get->data1));
+        if (result == 6) {
+            int index = SearchGameWithPlayer(*game, fd);
+            *game = DelAtGame(*game, index);
+        }
+
         //strcpy(buf, game_node_get->data.fire_1);
     }
 

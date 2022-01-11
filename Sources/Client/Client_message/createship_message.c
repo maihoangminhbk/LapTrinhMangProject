@@ -110,9 +110,9 @@ int createship_message(int client_sock)
     int index = 0;
     char ship_position[20];
     char buff[256];
-    int ship_info[256];
-
-    recv(client_sock, &ship_info, BUFF_SIZE, 0);
+    int ship_info[256]; // 100 x 4 = 400
+    send(client_sock, "CREATESHIP _", strlen("CREATESHIP _"), 0);
+    recv(client_sock, &ship_info, BUFF_SIZE, 0);  // send CREATSHIP _
     int ship_numbers = count_ship(ship_info);
 
     int row, col, ori, size;    // row, column, orientation, size of ship

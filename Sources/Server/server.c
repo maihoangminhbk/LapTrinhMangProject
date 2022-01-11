@@ -259,19 +259,23 @@ int main(int argc, char **argv)
                                                 
                                                 if(state_1_joinroom(data, sockfd, game_head, &recv_sock)) {
                                                         write(recv_sock, "30", 2);
-                                                        write(recv_sock, &ship_info, sizeof(ship_info));
+                                                        //write(recv_sock, &ship_info, sizeof(ship_info));
                                                 }
 
                                                 n = strlen(data);
                                                 printf("data la %s\n", data);
                                                 printf("sockfd = %d\n", sockfd);
                                                 write(sockfd, data, n);
-                                                if (strcmp(data, "6") == 0) {
-                                                        write(sockfd, &ship_info, sizeof(ship_info));
-                                                }
+                                                // if (strcmp(data, "6") == 0) {
+                                                //         write(sockfd, &ship_info, sizeof(ship_info));
+                                                // }
                                                 break;
                                         case 4:
-
+                                                if (strcmp(data, "_") == 0) 
+                                                {
+                                                        write(sockfd, &ship_info, sizeof(ship_info));
+                                                }
+                                                else {
                                                 result = state_2_createship(data, sockfd, game_head, &recv_sock);
                                                 printf("result = %d\n", result);
                                                 if (result == 0)
@@ -290,10 +294,11 @@ int main(int argc, char **argv)
                                                 printf("data la %s\n", data);
                                                 printf("sockfd = %d\n", sockfd);
                                                 write(sockfd, data, n);
+                                                }
                                                 break;
 
                                         case 5:
-                                                state_3_fire(data, data_opp, sockfd, game_head, &recv_sock);
+                                                state_3_fire(data, data_opp, sockfd, &game_head, &recv_sock);
                                                 write(recv_sock, data_opp, strlen(data_opp));
                                                 // data[0] = '0';
                                                 n = strlen(data);
