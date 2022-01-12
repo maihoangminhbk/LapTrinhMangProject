@@ -32,19 +32,19 @@ void statuss(int value)
 {
     if (value % 10 == 0)
     {
-        printf(" ~~~ ");
+        printf(ANSI_COLOR_BLUE " ~~~ " ANSI_COLOR_RESET);
     }
     else if (value % 10 == 3)
     {
-        printf(" ~X~ ");
+        printf(ANSI_COLOR_YELLOW "  X  " ANSI_COLOR_RESET);
     }
     else if (value % 10 == 4)
     {
-        printf(" /O/ ");
+        printf(ANSI_COLOR_RED "  O  " ANSI_COLOR_RESET);
     }
     else if (value % 10 == 1)
     {
-        printf(" /#/ ");
+        printf(" |#| ");
     }
     else
     {
@@ -104,35 +104,45 @@ int placescheckhome(int map[ROW][COL])
     }
     return k;
 }
+
 // places left on the away
-int placescheckaway(int map[ROW][COL])
+int placescheckaway()
 {
-    int i, j, k = 0;
+    int i, j, k = 0, l = 0;
     for (i = 0; i < ROW; i++)
     {
         for (j = 0; j < COL; j++)
         {
-            if ((map[i][j] % 10) == 4)
+            if ((map.home[i][j] % 10) == 4 || (map.home[i][j] % 10) == 1)
             {
                 k++;
             }
         }
     }
-    return (3 - k);
+
+    for (i = 0; i < ROW; i++)
+    {
+        for (j = 0; j < COL; j++)
+        {
+            if ((map.away[i][j] % 10) == 4)
+            {
+                l++;
+            }
+        }
+    }
+    return (k - l);
 }
 // show screen when playing game after a turn
 void gshow(char message[BUFF_SIZE])
 {
 	system("clear");
-	//int i = -1, j = -1, k, l;
 	printf("\n");
 	printf("\nNETWORK BATTLESHIP V 1.0.1 Beta \n");
 	printMapp(map.home);
-	printf("Ships remaining to attack: %2d", placescheckaway(map.away));
+	printf("Ships remaining to attack: %2d", placescheckaway());
 	printf("\tShips left : %2d", placescheckhome(map.home));
 	printf("\n");
 	printMapp(map.away);
-	//sleep(2);
 	puts(message);
 }
 
@@ -171,10 +181,8 @@ int fire_message(int client_sock, int turn)
 {
     char fire_position[20];
     char buff[256];
-    char buff1[10];
-    memset(buff1, 0, 10);
     int result = 0;
-    // memset(buff, 0, 256);
+    memset(buff, 0, 256);
     setzz();
     int bytes_received;
 
@@ -182,7 +190,6 @@ int fire_message(int client_sock, int turn)
     if (turn == 0) {
         while (1==1)
         {
-            bytes_received = recv(client_sock, buff, BUFF_SIZE, 0); ///buff = 41
             printf("Please input fire position : \n");
             printf("Enter x = ");
             scanf("%d", &x);
@@ -197,7 +204,6 @@ int fire_message(int client_sock, int turn)
                 strcat(buff, "TURN ");
                 strcat(buff, fire_position);
                 buff[strlen(buff)-1] = '\0';
-                //printf("buff la %s\n", buff);
 
                 int bytes_sent;
                 bytes_sent = send(client_sock, buff, strlen(buff), 0);

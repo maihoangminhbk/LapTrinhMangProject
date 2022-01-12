@@ -259,16 +259,12 @@ int main(int argc, char **argv)
                                                 
                                                 if(state_1_joinroom(data, sockfd, game_head, &recv_sock)) {
                                                         write(recv_sock, "30", 2);
-                                                        //write(recv_sock, &ship_info, sizeof(ship_info));
                                                 }
 
                                                 n = strlen(data);
                                                 printf("data la %s\n", data);
                                                 printf("sockfd = %d\n", sockfd);
                                                 write(sockfd, data, n);
-                                                // if (strcmp(data, "6") == 0) {
-                                                //         write(sockfd, &ship_info, sizeof(ship_info));
-                                                // }
                                                 break;
                                         case 4:
                                                 if (strcmp(data, "_") == 0) 
@@ -278,19 +274,7 @@ int main(int argc, char **argv)
                                                 else {
                                                 result = state_2_createship(data, sockfd, game_head, &recv_sock);
                                                 printf("result = %d\n", result);
-                                                if (result == 0)
-                                                {
-                                                        write(recv_sock, "41", 2);
-                                                        printf("2\n");
-                                                };
                                                 n = strlen(data);
-                                                if (result == 1)
-                                                {
-                                                        write(sockfd, data, n);
-                                                }
-                                                // state_2_createship(data, sockfd, game_head, &recv_sock);
-                                                // write(recv_sock, "41", 2);
-                                                // n = strlen(data);
                                                 printf("data la %s\n", data);
                                                 printf("sockfd = %d\n", sockfd);
                                                 write(sockfd, data, n);
@@ -310,12 +294,6 @@ int main(int argc, char **argv)
                                         default:
                                                 break;
                                         }
-
-                                        // n = strlen(data);
-                                        // printf("n = %d\n", n);
-                                        // printf("data la %s\n", data);
-                                        // printf("sockfd = %d\n", sockfd);
-                                        // write(sockfd, data, n);
                                 }
 
                                 // No more readable file descriptors

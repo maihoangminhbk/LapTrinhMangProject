@@ -95,10 +95,11 @@ int option_message(int client_sock)
 
     buff[bytes_received] = '\0';
 
+    int on;
     switch (buff[0])
     {
     case '5':
-        int on = 1;
+        on = 1;
         int rc = ioctl(client_sock, FIONBIO, (char *)&on);
         if (rc < 0)
         {
@@ -131,7 +132,7 @@ int option_message(int client_sock)
                     memset(buff, 0, 256);
                     strcat(buff, "CREATEROOM cancel");
 
-                    int on = 0;
+                    on = 0;
                     rc = ioctl(client_sock, FIONBIO, (char *)&on);
                     if (rc < 0)
                     {
@@ -158,7 +159,7 @@ int option_message(int client_sock)
             else if (bytes_received == 0)
                 printf("Connection closed.\n");
 
-            int on = 0;
+            on = 0;
             rc = ioctl(client_sock, FIONBIO, (char *)&on);
             if (rc < 0)
             {

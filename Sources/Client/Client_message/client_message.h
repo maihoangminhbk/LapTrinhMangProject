@@ -1,4 +1,3 @@
-//#include <client_global.h>
 
 int login_message(int);
 

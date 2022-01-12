@@ -3,7 +3,7 @@
 #include <string.h>
 
 #include <global_variable.h>
-int ship_info[] = {1};
+int ship_info[] = {1, 2, 3};
 
 int count_ships()
 {
