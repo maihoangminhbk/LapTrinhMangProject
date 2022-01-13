@@ -20,7 +20,8 @@
 
 node head = NULL;
 game_node game_head = NULL;
-
+User *users = NULL;
+char username[10];
 // write "n" bytes to a descriptor
 
 ssize_t writen(int fd, char *ptr, size_t n)
@@ -199,6 +200,12 @@ int main(int argc, char **argv)
                                         close(sockfd);
                                         int index = SearchGameWithPlayer(game_head, sockfd);
                                         game_head = DelAtGame(game_head, index);
+                                        index = Search(head, sockfd);
+                                        node node_state = Get(head, index);
+                                        User *user = searchUser(users, node_state->username);
+                                        user->status = 1;
+                                        // index = Search(head, sockfd);
+                                        // head = DelAt(head, index);
                                         // head = DelByVal(head, sockfd);
 
                                         clients[i].fd = -1;
@@ -206,14 +213,14 @@ int main(int argc, char **argv)
                                 else
                                 {
                                         printf("Read %zu bytes from socket %d\n", n, sockfd);
-                                        
+
                                         int ship_info[10];
                                         get_ship_info(ship_info);
                                         char data[100];
                                         memset(data, 0, 100);
                                         char data_opp[100];
                                         memset(data_opp, 0, 100);
-                                        printf("Check\n");
+                                        // printf("Check\n");
                                         int message_func = handle_message(buf, data);
                                         printf("data -%s-\n", data);
                                         // printf("Check 2\n");
@@ -226,15 +233,26 @@ int main(int argc, char **argv)
                                         switch (message_func)
                                         {
                                         case 0:
-                                                if (state_0_login(data))
+                                                if (state_0_login(data, &users, username))
                                                 {
-                                                        head = AddTail(head, sockfd, 0);
+                                                        head = AddTail(head, sockfd, 0, username);
                                                         // head = AddTail(head, sockfd, 0);
-                                                        Traverser(head);
+                                                        // Traverser(head);
                                                 };
+
+                                                for (game_node p = game_head; p != NULL; p = p->next)
+                                                {
+                                                        char temp[30];
+                                                        memset(temp, 0, 30);
+
+                                                        sprintf(temp, "%s\n", p->room_name);
+                                                        strcat(data, temp);
+                                                }
+
                                                 n = strlen(data);
+                                                // printf("data la %s\n", data);
+                                                // printf("sockfd = %d\n", sockfd);
                                                 printf("data la %s\n", data);
-                                                printf("sockfd = %d\n", sockfd);
                                                 write(sockfd, data, n);
 
                                                 break;
@@ -246,18 +264,19 @@ int main(int argc, char **argv)
                                                 TraverserGame(game_head);
 
                                                 n = strlen(data);
-                                                printf("data la %s\n", data);
-                                                printf("data la %s\n", data);
-                                                printf("sockfd = %d\n", sockfd);
+                                                // printf("data la %s\n", data);
+                                                // printf("data la %s\n", data);
+                                                // printf("sockfd = %d\n", sockfd);
                                                 write(sockfd, data, n);
                                                 break;
                                         case 2:
                                                 // int index = SearchPlayerWithRoomName(game_head, data);
-                                                
-                                                //int index1 = 0;
-                                                //printf("index la %d\n", index1);
-                                                
-                                                if(state_1_joinroom(data, sockfd, game_head, &recv_sock)) {
+
+                                                // int index1 = 0;
+                                                // printf("index la %d\n", index1);
+
+                                                if (state_1_joinroom(data, sockfd, game_head, &recv_sock))
+                                                {
                                                         write(recv_sock, "30", 2);
                                                 }
 
@@ -267,17 +286,18 @@ int main(int argc, char **argv)
                                                 write(sockfd, data, n);
                                                 break;
                                         case 4:
-                                                if (strcmp(data, "_") == 0) 
+                                                if (strcmp(data, "_") == 0)
                                                 {
                                                         write(sockfd, &ship_info, sizeof(ship_info));
                                                 }
-                                                else {
-                                                result = state_2_createship(data, sockfd, game_head, &recv_sock);
-                                                printf("result = %d\n", result);
-                                                n = strlen(data);
-                                                printf("data la %s\n", data);
-                                                printf("sockfd = %d\n", sockfd);
-                                                write(sockfd, data, n);
+                                                else
+                                                {
+                                                        result = state_2_createship(data, sockfd, game_head, &recv_sock);
+                                                        printf("result = %d\n", result);
+                                                        n = strlen(data);
+                                                        printf("data la %s\n", data);
+                                                        printf("sockfd = %d\n", sockfd);
+                                                        write(sockfd, data, n);
                                                 }
                                                 break;
 

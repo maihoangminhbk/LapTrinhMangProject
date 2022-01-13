@@ -3,17 +3,19 @@
 
 struct LinkedList{
     int connfd;
+    char username[10];
     int state;
     struct LinkedList *next;
  };
 
-typedef struct LinkedList *node; //Từ giờ dùng kiểu dữ liệu LinkedList có thể thay bằng node cho ngắn gọn
-
+typedef struct LinkedList *node; 
 int GetByVal(node, int);
 node DelByVal(node, int);
-node AddTail(node head, int fd, int state);
+node AddTail(node, int, int, char*);
 void Traverser(node);
-
+int Search(node head, int fd);
+node DelAt(node head, int position);
+node Get(node head, int index);
 typedef struct game_data {
     //char ship_position_1[10];
     //char ship_position_2[10];

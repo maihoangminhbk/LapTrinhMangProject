@@ -247,7 +247,7 @@ void TraverserGame(game_node head)
     printf("\n");
     for (game_node p = head; p != NULL; p = p->next)
     {
-        printf("player 1 id is %5d \troom name is %s\n", p->player1, p->room_name);
+        printf("host id is %5d \troom name is %s\n", p->player1, p->room_name);
     }
 
 }

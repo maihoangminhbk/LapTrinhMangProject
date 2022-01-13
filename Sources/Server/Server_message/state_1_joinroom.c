@@ -22,7 +22,7 @@ int state_1_joinroom(char *buf, int fd, game_node game, int* recv_sock) {
     // TraverserGame(game);
     
     
-    printf("index la %d\n", index);
+    // printf("index la %d\n", index);
     
     if(index == -1) {
         strcpy(buf, "1");
