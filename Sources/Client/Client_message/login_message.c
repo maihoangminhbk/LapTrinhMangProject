@@ -24,18 +24,11 @@ int login_message(int client_sock)
     while (count < 5)
     {
         memset(buff, 0, 256);
-<<<<<<< HEAD
         memset(userid, 0, 20);
         memset(password, 0, 20);
         printf("Enter user id:\n");
         fgets(userid, 20, stdin);
         printf("Enter password:\n");
-=======
-
-        printf("Enter username:\n"); 
-        fgets(userid, 20, stdin);
-        printf("Enter password:\n"); 
->>>>>>> 76ea0b4d86e28747c9b075c0e1fd422b6d49ae40
         fgets(password, 20, stdin);
         userid[strlen(userid) - 1] = '\0';
         password[strlen(password) - 1] = '\0';
