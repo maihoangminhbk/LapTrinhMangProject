@@ -65,7 +65,7 @@ int main(int argc, char **argv)
         ssize_t n;
         int INFTIM = -1;
 
-        if (argc != 2)
+        if (argc != 3)
         {
                 usage(argv[0]);
                 return EXIT_FAILURE;
@@ -73,6 +73,9 @@ int main(int argc, char **argv)
 
         // Get TCP port number
         port = atoi(argv[1]);
+        char server_addr[20];
+        memset(server_addr, 0, 20);
+        strcpy(server_addr, argv[2]);
         if (port <= 0 || port > 65535)
         {
                 fprintf(stderr, "Invalid port number %d\n", port);
@@ -93,7 +96,7 @@ int main(int argc, char **argv)
         // Initialize server socket address
         memset(&servaddr, 0, sizeof(servaddr));
         servaddr.sin_family = AF_INET;
-        servaddr.sin_addr.s_addr = INADDR_ANY;
+        servaddr.sin_addr.s_addr = inet_addr(server_addr);
         servaddr.sin_port = htons(port);
 
         // Bind socket to an address
