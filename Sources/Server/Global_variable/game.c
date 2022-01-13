@@ -71,7 +71,7 @@ game_node CreateNodeGame(int fd)
     temp->data2.count_ship = 0;
     // itoa(fd, id, 10);
     sprintf(id, "%d", fd);
-    strcat(roomname, "room");
+    strcat(roomname, "room"); //room4
     strcat(roomname, id);
     strcpy(temp->room_name, roomname);
 

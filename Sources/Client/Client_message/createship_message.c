@@ -46,15 +46,15 @@ void status(int value)
 {
 	if (value % 10 == 0)
 	{
-		printf(ANSI_COLOR_BLUE " ~~~ " ANSI_COLOR_RESET);
+		printf(BLUE " ~~~ " RESET);
 	}
 	else if (value % 10 == 3)
 	{
-		printf(ANSI_COLOR_YELLOW "  X  " ANSI_COLOR_RESET);        // hit failed
+		printf(YELLOW "  X  " RESET);        // hit failed
 	}
 	else if (value % 10 == 4)
 	{
-		printf(ANSI_COLOR_RED "  O  " ANSI_COLOR_RESET);        // hit successful
+		printf(RED "  O  " RESET);        // hit successful
 	}
 	else if (value % 10 == 1)
 	{
@@ -117,6 +117,7 @@ int createship_message(int client_sock)
     int ship_numbers = count_ship(ship_info);
 
     setz();
+    printf("\n MY HOME MAP \n");
     printMap(mymap.home);
     int row, col, ori, size;    // row, column, orientation, size of ship
     while (index < ship_numbers)
@@ -130,7 +131,7 @@ int createship_message(int client_sock)
 		scanf("%d", &ori);
 
         if (checkShipInput(row, col, ori)){
-            int pos = row + col*10 + size*100 + ori*1000;
+            int pos = (row-1) + (col-1)*10 + size*100 + ori*1000;
             memset(ship_position, 0, 20);
             sprintf(ship_position, "%d\n", pos);
             memset(buff, 0, 256);
@@ -148,6 +149,9 @@ int createship_message(int client_sock)
             int bytes_received;
             
             recv(client_sock, &mymap.home, sizeof(mymap.home), 0);  // receive map
+
+            system("clear");
+            printf("\n MY HOME MAP \n");
             printMap(mymap.home);
             
             memset(buff, 0, 256);

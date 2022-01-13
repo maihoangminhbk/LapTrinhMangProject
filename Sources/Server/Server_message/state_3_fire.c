@@ -91,7 +91,7 @@ int state_3_fire(char *buf, char *buf1, int fd, game_node *game, int* recv_sock)
     if (fd == game_node_get->player1)
     {
         //strcpy(game_node_get->data.fire_1, buf);
-        int result = upstrike(game_node_get->data2.home, game_node_get->data1.away, x - 1, y - 1);
+        int result = upstrike(game_node_get->data2.home, game_node_get->data1.away, x, y);
         if (result == 4) {
             strcpy(buf, "4"); // failed
             buf[1] = '\0';
@@ -140,7 +140,7 @@ int state_3_fire(char *buf, char *buf1, int fd, game_node *game, int* recv_sock)
     if (fd == game_node_get->player2)
     {
         //strcpy(game_node_get->data.fire_2, buf);
-        int result = upstrike(game_node_get->data1.home, game_node_get->data2.away, x - 1, y - 1);
+        int result = upstrike(game_node_get->data1.home, game_node_get->data2.away, x, y);
         
         if (result == 4) {
             strcpy(buf, "4");

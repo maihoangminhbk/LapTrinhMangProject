@@ -13,7 +13,7 @@
 #include <client_global.h>
 
 client_map map;
-void setzz()
+void init_map()
 {
     int i, j;
     for (i = 0; i < ROW; i++)
@@ -32,15 +32,15 @@ void statuss(int value)
 {
     if (value % 10 == 0)
     {
-        printf(ANSI_COLOR_BLUE " ~~~ " ANSI_COLOR_RESET);
+        printf(BLUE " ~~~ " RESET);
     }
     else if (value % 10 == 3)
     {
-        printf(ANSI_COLOR_YELLOW "  X  " ANSI_COLOR_RESET);
+        printf(YELLOW "  X  " RESET);
     }
     else if (value % 10 == 4)
     {
-        printf(ANSI_COLOR_RED "  O  " ANSI_COLOR_RESET);
+        printf(RED "  O  " RESET);
     }
     else if (value % 10 == 1)
     {
@@ -183,7 +183,7 @@ int fire_message(int client_sock, int turn)
     char buff[256];
     int result = 0;
     memset(buff, 0, 256);
-    setzz();
+    init_map();
     int bytes_received;
 
     int x, y;
@@ -196,7 +196,7 @@ int fire_message(int client_sock, int turn)
             printf("Enter y = ");
             scanf("%d", &y);
             if (checkHitInput(x, y)) {
-                int pos = x + y*10;
+                int pos = (x-1) + (y-1)*10;
                 
                 memset(fire_position, 0, 20);
                 sprintf(fire_position, "%d\n", pos);
@@ -204,21 +204,21 @@ int fire_message(int client_sock, int turn)
                 strcat(buff, "TURN ");
                 strcat(buff, fire_position);
                 buff[strlen(buff)-1] = '\0';
-
+                // send fire position to server
                 int bytes_sent;
                 bytes_sent = send(client_sock, buff, strlen(buff), 0);
 
                 if (bytes_sent < 0)
                     perror("\nError: ");
-
+                // receive map
                 recv(client_sock, &map, sizeof(map), 0);
-
+                // receive result of firing
                 memset(buff, 0, 256);
                 bytes_received = recv(client_sock, buff, BUFF_SIZE, 0);
                 buff[bytes_received] = '\0';
                 
                 result = process_buff(buff);
-                if ( result == 1 || result == 2)
+                if ( result == 1 || result == 2) // win or lost
                 {
                     return 0;
                 }
@@ -234,11 +234,13 @@ int fire_message(int client_sock, int turn)
         }
     }
     else {
+            // receive map
             recv(client_sock, &map, sizeof(map), 0);
             memset(buff, 0, 256);
+            // receive result of being destroyed
             int bytes_received = recv(client_sock, buff, BUFF_SIZE, 0);
             result = process_buff(buff);
-            if ( result == 1 || result == 2)
+            if ( result == 1 || result == 2) // win or lost
             {
                 return 0;
             }
@@ -259,29 +261,30 @@ int fire_message(int client_sock, int turn)
                 printf("Enter y = ");
                 scanf("%d", &y);
                 if (checkHitInput(x, y)) {
-                    int pos = x + y*10;
+                    int pos = (x-1) + (y-1)*10;
                     memset(fire_position, 0, 20);
                     sprintf(fire_position, "%d\n", pos);
                     memset(buff, 0, 256);
                     strcat(buff, "TURN ");
                     strcat(buff, fire_position);
                     buff[strlen(buff)-1] = '\0';
-
+                    // send fire position to server
                     int bytes_sent;
                     bytes_sent = send(client_sock, buff, strlen(buff), 0);
 
                     if (bytes_sent < 0)
                         perror("\nError: ");
 
-                    // receive echo reply
+                    // receive map
                     int bytes_received;
                     recv(client_sock, &map, sizeof(map), 0);
+                    // receive result of firing
                     memset(buff, 0, 256);
-                    bytes_received = recv(client_sock, buff, BUFF_SIZE, 0); // 4 - 5 - 6
+                    bytes_received = recv(client_sock, buff, BUFF_SIZE, 0); 
                     buff[bytes_received] = '\0';
 
                     int result = process_buff(buff);
-                    if ( result == 1 || result == 2) // success or failed
+                    if ( result == 1 || result == 2) // win or lost
                     {
                         result = 10;
                         return 0;
@@ -299,11 +302,13 @@ int fire_message(int client_sock, int turn)
 
         }
         else {
+            // receive map
             recv(client_sock, &map, sizeof(map), 0);
+            // receive result of being destroyed
             memset(buff, 0, 256);
             int bytes_received = recv(client_sock, buff, BUFF_SIZE, 0);
             int result = process_buff(buff);
-            if (result == 1 || result == 2)
+            if (result == 1 || result == 2) // win or lost
             {
                 result = 10;
                 return 0;

@@ -5,6 +5,7 @@
 #include <sys/types.h>
 #include <string.h>
 
+#include <client_global.h>
 #include <client_message.h>
 
 #define SERVER_ADDR "127.0.0.1"
@@ -36,8 +37,15 @@ int main()
 	// Step 4: Communicate with server
 
 	// send message
-	printf("\nWelcome to Battle Ship\n");
-	printf("========================\n");
+	printf("\n============================================================================================\n");
+	printf("Welcome to Battle Ship\n");
+	printf("Battle Ship (also Battleships or Sea Battle) is a strategy type guessing game for two players.\nafter adjusting the setting you can choose your shots to destroy rival's ships and gain score\nHave fun!\n\n");
+    printf (BLUE "XXXXX   XXXX  XXXXXX XXXXXX XX     XXXXXX  XXXXX XX  XX XX XXXX\n" RESET);
+	printf (BLUE "XX  XX XX  XX   XX     XX   XX     XX     XX     XX  XX XX XX  XX\n" RESET);
+	printf (BLUE "XXXXX  XX  XX   XX     XX   XX     XXXX    XXXX  XXXXXX XX XXXX\n" RESET); 
+	printf (BLUE "XX  XX XXXXXX   XX     XX   XX     XX         XX XX  XX XX XX\n" RESET);
+	printf (BLUE "XXXXX  XX  XX   XX     XX   XXXXXX XXXXXX XXXXX  XX  XX XX XX\n\n" RESET);
+	printf("==============================================================================================\n");
 	int op = 0;
 	int turn = 0;
 	while (op != 4)
@@ -47,7 +55,7 @@ int main()
 		case 0:
 			if (!login_message(client_sock))
 			{
-				printf("Login fails\n");
+				printf("\nLogin failed\n");
 				return 0;
 			}
 			op = 1;

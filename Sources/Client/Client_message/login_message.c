@@ -25,9 +25,9 @@ int login_message(int client_sock)
     {
         memset(buff, 0, 256);
 
-        printf("Enter user id:\n");
+        printf("Enter username:\n"); 
         fgets(userid, 20, stdin);
-        printf("Enter pssword:\n");
+        printf("Enter password:\n"); 
         fgets(password, 20, stdin);
         userid[strlen(userid) - 1] = '\0';
         password[strlen(password) - 1] = '\0';
@@ -52,18 +52,18 @@ int login_message(int client_sock)
             printf("Connection closed.\n");
 
         buff[bytes_received] = '\0';
-        if (buff[0] == '0')
+        if (buff[0] == '0') // 0 0 0 2
         {
             switch (buff[2])
             {
             case '0':
-                printf("Invalid username\n");
+                printf("\nInvalid username\n\n");
                 break;
             case '1':
-                printf("Invalid password\n");
+                printf("\nInvalid password\n\n");
                 break;
             case '2':
-                printf("Other login\n");
+                printf("\nOther login\n");
                 break;
 
             default:
@@ -72,7 +72,7 @@ int login_message(int client_sock)
         }
         else
         {
-            printf("login successful\n");
+            printf("\nLogin successful\n\n");
             return 1;
         }
     }
