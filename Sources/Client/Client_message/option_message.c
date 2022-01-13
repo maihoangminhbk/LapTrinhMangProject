@@ -41,6 +41,7 @@ int option_message(int client_sock)
     int input = 0;
     while (input == 0)
     {
+        printf("==============================================================================================\n");
         printf("1. Create Room\n");
         printf("2. Join room\n");
         printf("3. Exit\n");
@@ -53,7 +54,7 @@ int option_message(int client_sock)
         switch (input)
         {
         case 1:
-            printf("Choose create room\n");
+            printf("\nChoose create room\n");
             strcat(buff, "CREATEROOM _");
             break;
 
@@ -63,7 +64,7 @@ int option_message(int client_sock)
             fgets(roomname, 20, stdin);
             roomname[strlen(roomname) - 1] = '\0';
             strcat(buff, "JOINROOM ");
-            strcat(buff, roomname);
+            strcat(buff, roomname); // JOINROOM room4
             break;
 
         case 3:
@@ -80,13 +81,12 @@ int option_message(int client_sock)
 
     int bytes_sent;
     bytes_sent = send(client_sock, buff, strlen(buff), 0);
-    printf("Buff la %s\n", buff);
 
     if (bytes_sent < 0)
         perror("\nError: ");
 
     // receive echo reply
-    int bytes_received;
+    int bytes_received; 
     bytes_received = recv(client_sock, buff, BUFF_SIZE, 0);
     if (bytes_received < 0)
         perror("\nError: ");

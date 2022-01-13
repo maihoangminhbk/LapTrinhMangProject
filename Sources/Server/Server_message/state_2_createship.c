@@ -67,9 +67,9 @@ int addship(int map[ROW][COL], int x, int y, int orientation, int size)
 // process to create ship
 int processShip(int map[ROW][COL], int row, int col, int ori, int size)
 {
-	if ((checkfill(map, (row - 1), (col - 1), ori, size) == 1))
+	if ((checkfill(map, row, col, ori, size) == 1))
 	{
-		addship(map, (row - 1), (col - 1), ori, size);
+		addship(map, row, col, ori, size);
 		return 1;
 	}
 	else
