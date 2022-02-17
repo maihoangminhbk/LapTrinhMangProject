@@ -73,7 +73,7 @@ int login_message(int client_sock)
         }
         else
         {
-            printf("login successful\n");
+            printf("\nLogin successful\n\n");
             printf("Room list:\n");
             printf("%s", buff + 3);
             return 1;

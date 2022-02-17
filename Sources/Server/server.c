@@ -14,7 +14,7 @@
 
 #include <server_message.h>
 // #include <global_variable.h>
-
+#define OPEN_MAX 3200
 #define LISTENQ 5
 #define BUF_SIZE 1024
 
@@ -207,9 +207,6 @@ int main(int argc, char **argv)
                                         node node_state = Get(head, index);
                                         User *user = searchUser(users, node_state->username);
                                         user->status = 1;
-                                        // index = Search(head, sockfd);
-                                        // head = DelAt(head, index);
-                                        // head = DelByVal(head, sockfd);
 
                                         clients[i].fd = -1;
                                 }
@@ -223,14 +220,11 @@ int main(int argc, char **argv)
                                         memset(data, 0, 100);
                                         char data_opp[100];
                                         memset(data_opp, 0, 100);
-                                        // printf("Check\n");
+
                                         int message_func = handle_message(buf, data);
                                         printf("data -%s-\n", data);
-                                        // printf("Check 2\n");
                                         printf("Buff la %s, func no la %d\n", buf, message_func);
-                                        // if(message_func != 2) {
-                                        //         printf("T bang 2 roi day -%d-\n", message_func);
-                                        // }
+                                        
                                         int recv_sock;
                                         int result;
                                         switch (message_func)
@@ -253,30 +247,18 @@ int main(int argc, char **argv)
                                                 }
 
                                                 n = strlen(data);
-                                                // printf("data la %s\n", data);
-                                                // printf("sockfd = %d\n", sockfd);
-                                                printf("data la %s\n", data);
                                                 write(sockfd, data, n);
 
                                                 break;
                                         case 1:
-                                                // game_head = AddTailGame(game_head, sockfd);
-                                                // game_head = AddTailGame(game_head, sockfd);
                                                 state_1_createroom(data, sockfd, &game_head);
-                                                // TraverserGame(game_head);
                                                 TraverserGame(game_head);
 
                                                 n = strlen(data);
-                                                // printf("data la %s\n", data);
-                                                // printf("data la %s\n", data);
-                                                // printf("sockfd = %d\n", sockfd);
+                                             
                                                 write(sockfd, data, n);
                                                 break;
                                         case 2:
-                                                // int index = SearchPlayerWithRoomName(game_head, data);
-
-                                                // int index1 = 0;
-                                                // printf("index la %d\n", index1);
 
                                                 if (state_1_joinroom(data, sockfd, game_head, &recv_sock))
                                                 {
@@ -284,8 +266,7 @@ int main(int argc, char **argv)
                                                 }
 
                                                 n = strlen(data);
-                                                printf("data la %s\n", data);
-                                                printf("sockfd = %d\n", sockfd);
+
                                                 write(sockfd, data, n);
                                                 break;
                                         case 4:
@@ -296,11 +277,12 @@ int main(int argc, char **argv)
                                                 else
                                                 {
                                                         result = state_2_createship(data, sockfd, game_head, &recv_sock);
-                                                        printf("result = %d\n", result);
+                                                        
                                                         n = strlen(data);
-                                                        printf("data la %s\n", data);
-                                                        printf("sockfd = %d\n", sockfd);
                                                         write(sockfd, data, n);
+                                                        if (result == 0){
+                                                                write(recv_sock, data, n);
+                                                        }
                                                 }
                                                 break;
 

@@ -195,6 +195,9 @@ int SearchPlayerWithRoomName(game_node head, int fd, char* roomname)
         if (strcmp(p->room_name, roomname) == 0)
         {
             printf("Player 1 la %d\n", p->player1);
+            if (p->player2 != 0) {
+            	return -2;
+            }
             p->player2 = fd;
             return p->player1;
         } else {

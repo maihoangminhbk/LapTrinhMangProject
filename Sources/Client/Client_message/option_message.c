@@ -70,6 +70,7 @@ int option_message(int client_sock)
         case 3:
             printf("Log out...\n");
             strcat(buff, "EXIT _");
+            exit(0);
             break;
 
         default:
@@ -186,7 +187,8 @@ int option_message(int client_sock)
         printf("Not found room name, Join room fails\n");
         return 0;
         break;
-
+    case '2': 
+        printf("Room had full of players. Please join another room.\n");
     default:
         break;
     }

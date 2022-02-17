@@ -187,9 +187,13 @@ int fire_message(int client_sock, int turn)
     int bytes_received;
 
     int x, y;
-    if (turn == 0) {
+    if ((turn % 2) == 0) {
+        if (turn == 0) {
+            memset(buff, 0, 256);
+            bytes_received = recv(client_sock, buff, BUFF_SIZE, 0);
+        }
         while (1==1)
-        {
+        {   
             printf("Please input fire position : \n");
             printf("Enter x = ");
             scanf("%d", &x);

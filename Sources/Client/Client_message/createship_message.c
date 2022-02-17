@@ -168,7 +168,7 @@ int createship_message(int client_sock)
             {
                 printf("\nStart game!!!\n");
                 printf("Your turn\n");
-                return 0;
+                return 2;
             }
 
             if (strcmp(buff, "40") == 0)
