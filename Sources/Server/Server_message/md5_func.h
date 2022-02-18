@@ -1,0 +1,1 @@
+int MD5(char* msg, char* password);

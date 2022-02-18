@@ -6,18 +6,20 @@
 
 
  
-node CreateNode(int fd, int state){
+node CreateNode(int fd, int state, char* username){
     node temp; // declare a node
     temp = (node)malloc(sizeof(struct LinkedList)); // Cấp phát vùng nhớ dùng malloc()
     temp->next = NULL;// Cho next trỏ tới NULL
     temp->connfd = fd; // Gán giá trị cho Node
     temp->state = state;
+    memset(temp->username, 0, 10);
+    strcpy(temp->username, username);
     return temp;//Trả về node mới đã có giá trị
 }
 
-node AddTail(node head, int fd, int state){
+node AddTail(node head, int fd, int state, char *username){
     node temp,p;// Khai báo 2 node tạm temp và p
-    temp = CreateNode(fd, state);//Gọi hàm createNode để khởi tạo node temp có next trỏ tới NULL và giá trị là value
+    temp = CreateNode(fd, state, username);//Gọi hàm createNode để khởi tạo node temp có next trỏ tới NULL và giá trị là value
     if(head == NULL){
         head = temp;     //Nếu linked list đang trống thì Node temp là head luôn
     }
@@ -68,7 +70,7 @@ node DelAt(node head, int position){
         if(k != position){
             // Nếu duyệt hết danh sách lk rồi mà vẫn chưa đến vị trí cần chèn, ta sẽ mặc định xóa cuối
             // Nếu bạn không muốn xóa, hãy thông báo vị trí xóa không hợp lệ
-            head = DelTail(head);
+            // head = DelTail(head);
             // printf("Vi tri xoa vuot qua vi tri cuoi cung!\n");
         }else{
             p->next = p->next->next;
@@ -77,14 +79,14 @@ node DelAt(node head, int position){
     return head;
 }
 
-int Get(node head, int index){
+node Get(node head, int index){
     int k = 0;
     node p = head;
     while(p->next != NULL && k != index){
         ++k;
         p = p->next;
     }
-    return p->state;
+    return p;
 }
 
 int Search(node head, int fd){
@@ -110,8 +112,8 @@ node DelByVal(node head, int fd){
 int GetByVal(node head, int fd){
     int position = Search(head, fd);
     
-    int state = Get(head, position);
-    return state;
+    node state = Get(head, position);
+    return state->state;
 }
 
 node InitHead(){
@@ -123,7 +125,7 @@ node InitHead(){
 void Traverser(node head){
     printf("\n");
     for(node p = head; p != NULL; p = p->next){
-        printf("fd is %5d \tstate is %5d\n", p->connfd, p->state);
+        printf("fd is %5d \tstate is %5d username %s\n", p->connfd, p->state, p->username);
     }
 }
 

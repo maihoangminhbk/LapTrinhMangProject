@@ -14,13 +14,14 @@
 
 #include <server_message.h>
 // #include <global_variable.h>
-
+#define OPEN_MAX 3200
 #define LISTENQ 5
 #define BUF_SIZE 1024
 
 node head = NULL;
 game_node game_head = NULL;
-
+User *users = NULL;
+char username[10];
 // write "n" bytes to a descriptor
 
 ssize_t writen(int fd, char *ptr, size_t n)
@@ -64,7 +65,7 @@ int main(int argc, char **argv)
         ssize_t n;
         int INFTIM = -1;
 
-        if (argc != 2)
+        if (argc != 3)
         {
                 usage(argv[0]);
                 return EXIT_FAILURE;
@@ -72,6 +73,9 @@ int main(int argc, char **argv)
 
         // Get TCP port number
         port = atoi(argv[1]);
+        char server_addr[20];
+        memset(server_addr, 0, 20);
+        strcpy(server_addr, argv[2]);
         if (port <= 0 || port > 65535)
         {
                 fprintf(stderr, "Invalid port number %d\n", port);
@@ -92,7 +96,7 @@ int main(int argc, char **argv)
         // Initialize server socket address
         memset(&servaddr, 0, sizeof(servaddr));
         servaddr.sin_family = AF_INET;
-        servaddr.sin_addr.s_addr = INADDR_ANY;
+        servaddr.sin_addr.s_addr = inet_addr(server_addr);
         servaddr.sin_port = htons(port);
 
         // Bind socket to an address
@@ -197,76 +201,104 @@ int main(int argc, char **argv)
                                 { // connection closed by client
                                         printf("Close socket %d\n", sockfd);
                                         close(sockfd);
-                                        head = DelByVal(head, sockfd);
-                                        
+                                        int index = SearchGameWithPlayer(game_head, sockfd);
+                                        game_head = DelAtGame(game_head, index);
+                                        index = Search(head, sockfd);
+                                        node node_state = Get(head, index);
+                                        User *user = searchUser(users, node_state->username);
+                                        user->status = 1;
+
                                         clients[i].fd = -1;
                                 }
                                 else
                                 {
                                         printf("Read %zu bytes from socket %d\n", n, sockfd);
-                                        
+
+                                        int ship_info[10];
+                                        get_ship_info(ship_info);
                                         char data[100];
                                         memset(data, 0, 100);
-                                        printf("Check\n");
+                                        char data_opp[100];
+                                        memset(data_opp, 0, 100);
+
                                         int message_func = handle_message(buf, data);
                                         printf("data -%s-\n", data);
-                                        // printf("Check 2\n");
                                         printf("Buff la %s, func no la %d\n", buf, message_func);
-                                        // if(message_func != 2) {
-                                        //         printf("T bang 2 roi day -%d-\n", message_func);
-                                        // }
+                                        
                                         int recv_sock;
+                                        int result;
                                         switch (message_func)
                                         {
                                         case 0:
-                                                if (state_0_login(data))
+                                                if (state_0_login(data, &users, username))
                                                 {
-                                                        head = AddTail(head, sockfd, 0);
+                                                        head = AddTail(head, sockfd, 0, username);
                                                         // head = AddTail(head, sockfd, 0);
-                                                        Traverser(head);
+                                                        // Traverser(head);
                                                 };
 
+                                                for (game_node p = game_head; p != NULL; p = p->next)
+                                                {
+                                                        char temp[30];
+                                                        memset(temp, 0, 30);
+
+                                                        sprintf(temp, "%s\n", p->room_name);
+                                                        strcat(data, temp);
+                                                }
+
+                                                n = strlen(data);
+                                                write(sockfd, data, n);
 
                                                 break;
                                         case 1:
-                                                game_head = AddTailGame(game_head, sockfd);
-                                                // game_head = AddTailGame(game_head, sockfd);
                                                 state_1_createroom(data, sockfd, &game_head);
-                                                // TraverserGame(game_head);
                                                 TraverserGame(game_head);
+
+                                                n = strlen(data);
+                                             
+                                                write(sockfd, data, n);
                                                 break;
                                         case 2:
-                                                // int index = SearchPlayerWithRoomName(game_head, data);
-                                                
-                                                int index = 0;
-                                                printf("index la %d\n", index);
-                                                if(state_1_joinroom(data, sockfd, game_head, &recv_sock)) {
+
+                                                if (state_1_joinroom(data, sockfd, game_head, &recv_sock))
+                                                {
                                                         write(recv_sock, "30", 2);
                                                 }
-                                                
+
+                                                n = strlen(data);
+
+                                                write(sockfd, data, n);
                                                 break;
                                         case 4:
-                                                if(state_2_createship(data, sockfd, game_head, &recv_sock) == 0) {
-                                                        write(recv_sock, "41", 2);
-                                                };
-
+                                                if (strcmp(data, "_") == 0)
+                                                {
+                                                        write(sockfd, &ship_info, sizeof(ship_info));
+                                                }
+                                                else
+                                                {
+                                                        result = state_2_createship(data, sockfd, game_head, &recv_sock);
+                                                        
+                                                        n = strlen(data);
+                                                        write(sockfd, data, n);
+                                                        if (result == 0){
+                                                                write(recv_sock, data, n);
+                                                        }
+                                                }
                                                 break;
-                                        
+
                                         case 5:
-                                                state_3_fire(data, sockfd, game_head, &recv_sock);
-                                                write(recv_sock, data, strlen(data));
-                                                data[0] = '0';
+                                                state_3_fire(data, data_opp, sockfd, &game_head, &recv_sock);
+                                                write(recv_sock, data_opp, strlen(data_opp));
+                                                // data[0] = '0';
+                                                n = strlen(data);
+                                                printf("data la %s b\n", data);
+                                                printf("sockfd = %d\n", sockfd);
+                                                write(sockfd, data, n);
                                                 break;
 
                                         default:
                                                 break;
                                         }
-
-                                        n = strlen(data);
-                                        printf("data la %s\n", data);
-                                        
-                                        write(sockfd, data, n);
-
                                 }
 
                                 // No more readable file descriptors

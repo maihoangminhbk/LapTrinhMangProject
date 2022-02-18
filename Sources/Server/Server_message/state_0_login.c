@@ -11,17 +11,12 @@
 #include <sys/types.h>
 #include <poll.h>
 #include <limits.h>
-
+// #include <md5.h>
+#include <math.h>
 #include <server_message.h>
+#include <md5_func.h>
 
-typedef struct user
-{
-    char userid[10];
-    char password[10];
-    int status;
-    struct user *next;
-} User;
-User *users;
+// User *users;
 
 User *initUser(char *userid, char *password, int status)
 {
@@ -70,16 +65,16 @@ User *searchUser(User *users, char *userid)
 void readUserFromFile(User **users, char *filename)
 {
     char userid[20];
-    char password[20];
+    char password[200];
     int status;
-    char line[50];
+    char line[500];
     FILE *fo = fopen(filename, "r");
     if (fo == NULL)
     {
         printf("Open file error\n");
         return;
     }
-    while (fgets(line, 50, fo) != NULL)
+    while (fgets(line, 500, fo) != NULL)
     {
         char *token = strtok(line, "|");
         strcpy(userid, token);
@@ -89,7 +84,7 @@ void readUserFromFile(User **users, char *filename)
         status = atoi(token);
         User *user = initUser(userid, password, status);
         bzero(userid, 20);
-        bzero(password, 20);
+        bzero(password, 200);
         addUser(users, user);
     };
     fclose(fo);
@@ -133,30 +128,35 @@ int authenticate(User *users, char *userid, char *password)
     }
     if (strcmp(user->password, password) == 0)
     {
+        printf("So sanh: -%s- vs -%s-\n", user->password, password);
         return 1;
     }
     return 0;
 }
 
-int state_0_login(char *buf)
+int state_0_login(char *buf, User **users, char *username)
 {
 
     char userid[20];
-    char password[20];
-
+    char password[200];
+    printUser(*users);
     bzero(userid, 20);
-    bzero(password, 20);
-    users = NULL;
-	readUserFromFile(&users, "Server_message/accounts.txt");
-    
+    bzero(password, 200);
+    // **users = NULL;
+    if(*users == NULL) {
+	    readUserFromFile(users, "Server_message/accounts.txt");
+    }
 
     char *token = strtok(buf, "|");
     strcpy(userid, token);
 
     token = strtok(NULL, "|");
     strcpy(password, token);
+    memset(buf, 0, 100);
+    MD5(password, password);
+    // printf("Password la -%s-\n", password);
 
-    User *user = searchUser(users, userid);
+    User *user = searchUser(*users, userid);
 
     
     if (user == NULL)
@@ -173,15 +173,18 @@ int state_0_login(char *buf)
     }
 
     
-    int check = authenticate(users, userid, password);
+    int check = authenticate(*users, userid, password);
 
     
     if (check)
     {
 
-        strcpy(buf, "1");
+        strcpy(buf, "1 _");
         user->status = 0;
-        writeToFile(users, "test.txt");
+        writeToFile(*users, "test.txt");
+        memset(username, 0, 10);
+        strcpy(username, userid);
+
         return 1;
     }
     else

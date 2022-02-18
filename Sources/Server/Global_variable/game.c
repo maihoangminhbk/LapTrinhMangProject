@@ -3,6 +3,53 @@
 #include <string.h>
 
 #include <global_variable.h>
+int ship_info[] = {1, 2, 3};
+
+int count_ships()
+{
+    int i = 0;
+	int count = 0;
+	while(ship_info[i] >= 1){
+		count++;
+		i++;
+	}
+	return count;
+}
+
+void get_ship_info(int info[])
+{
+    int total = count_ships();
+    int i = 0;
+    for (i = 0; i < total; i++)
+    {
+        info[i] = ship_info[i];
+    }
+}
+//
+int count_ship_point()
+{
+    int ship_number = count_ships();
+	int i, sum = 0;
+	for(i = 0; i < ship_number; i++)
+	{
+		sum += ship_info[i];
+	}
+    return sum;
+}
+
+void setz(game_data *map)
+{
+	int i = 0, j = 0;
+	for (i = 0; i < ROW; i++)
+	{
+		for (j = 0; j < COL; j++)
+		{
+			(*map).home[i][j] = 0;
+            (*map).away[i][j] = 0;
+		}
+	}
+	//memset(&map.message, 0, MAXLINE);
+}
 
 game_node CreateNodeGame(int fd)
 {
@@ -16,11 +63,15 @@ game_node CreateNodeGame(int fd)
     memset(roomname, 0, 20);
     char id[6];
     memset(id, 0, 6);
-    memset(temp->data.ship_position_1, 0, 10);
-    memset(temp->data.ship_position_2, 0, 10);
+    //memset(temp->data.ship_position_1, 0, 10);
+    //memset(temp->data.ship_position_2, 0, 10);
+    setz(&temp->data1);
+    setz(&temp->data2);
+    temp->data1.count_ship = 0;
+    temp->data2.count_ship = 0;
     // itoa(fd, id, 10);
     sprintf(id, "%d", fd);
-    strcat(roomname, "room");
+    strcat(roomname, "room"); //room4
     strcat(roomname, id);
     strcpy(temp->room_name, roomname);
 
@@ -97,7 +148,7 @@ game_node DelAtGame(game_node head, int position)
         {
             // Nếu duyệt hết danh sách lk rồi mà vẫn chưa đến vị trí cần chèn, ta sẽ mặc định xóa cuối
             // Nếu bạn không muốn xóa, hãy thông báo vị trí xóa không hợp lệ
-            head = DelTailGame(head);
+            // head = DelTailGame(head);
             // printf("Vi tri xoa vuot qua vi tri cuoi cung!\n");
         }
         else
@@ -136,7 +187,7 @@ int SearchGameWithPlayer(game_node head, int fd)
 
 int SearchPlayerWithRoomName(game_node head, int fd, char* roomname)
 {
-    int position = 0;
+    //int position = 0;
     // printf("Check join room search\n");
     for (game_node p = head; p != NULL; p = p->next)
     {
@@ -144,6 +195,9 @@ int SearchPlayerWithRoomName(game_node head, int fd, char* roomname)
         if (strcmp(p->room_name, roomname) == 0)
         {
             printf("Player 1 la %d\n", p->player1);
+            if (p->player2 != 0) {
+            	return -2;
+            }
             p->player2 = fd;
             return p->player1;
         } else {
@@ -169,7 +223,7 @@ game_data GetByValGame(game_node head, int fd)
 {
     int position = SearchGameWithPlayer(head, fd);
 
-    game_data data = GetGame(head, position)->data;
+    game_data data = GetGame(head, position)->data1;
     return data;
 }
 
@@ -190,9 +244,13 @@ game_node InitHeadGame()
 
 void TraverserGame(game_node head)
 {
+    if(head == NULL) {
+        return;
+    }
     printf("\n");
     for (game_node p = head; p != NULL; p = p->next)
     {
-        printf("player 1 id is %5d \troom name is %s\n", p->player1, p->room_name);
+        printf("host id is %5d \troom name is %s\n", p->player1, p->room_name);
     }
+
 }

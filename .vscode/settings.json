@@ -1,6 +1,8 @@
 {
     "files.associations": {
-        "global_variable.h": "c",
-        "in.h": "c"
-    }
+        "server_message.h": "c",
+        "client_message.h": "c",
+        "client_global.h": "c"
+    },
+    "C_Cpp.errorSquiggles": "Disabled"
 }
